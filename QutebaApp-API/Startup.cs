@@ -27,7 +27,7 @@ namespace QutebaApp_API
 
             var app = FirebaseApp.Create(new AppOptions()
             {
-                ProjectId = Configuration.GetValue<string>("project_id"),
+                ProjectId = Configuration.GetValue<string>("Firebase:project_id"),
                 Credential = GoogleCredential.FromFile(path)
             });
 

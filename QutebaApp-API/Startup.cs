@@ -1,8 +1,11 @@
+using FirebaseAdmin;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace QutebaApp_API
 {
@@ -19,6 +22,17 @@ namespace QutebaApp_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            string path = @"C:\Users\Medhin\Desktop\HIWOT\WorkSpace\QutebaAPP Project\Documents\service-account-file-qutebaapp.json";
+
+            var app = FirebaseApp.Create(new AppOptions()
+            {
+                ProjectId = Configuration.GetValue<string>("project_id"),
+                Credential = GoogleCredential.FromFile(path)
+            });
+
+            Console.WriteLine($"DEFAULT >>>> {FirebaseApp.DefaultInstance.Name}");
+            Console.WriteLine($"APP >>>> {app.Options.ProjectId}");
 
             services.AddSwaggerGen();
         }

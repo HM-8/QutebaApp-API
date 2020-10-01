@@ -12,9 +12,10 @@ namespace QutebaApp_API.Controllers
     [ApiController]
     public class AuthController : Controller
     {
+
         [HttpPost]
-        [Route("create")]
-        public async Task<IUserInfo[]> CreateUser([FromBody] User user)
+        [Route("CreateAccountWithEmailAndPassword")]
+        public async Task<IUserInfo[]> CreateUserWithEmailAndPassword([FromBody] User user)
         {
             try
             {
@@ -37,7 +38,7 @@ namespace QutebaApp_API.Controllers
 
         [Authorize]
         [HttpGet]
-        [Route("all")]
+        [Route("AllUsers")]
         public async Task<ActionResult<IEnumerable<UserRecord>>> GetAllUsers()
         {
             List<UserRecord> users = new List<UserRecord>();

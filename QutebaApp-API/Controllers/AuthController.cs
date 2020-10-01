@@ -1,4 +1,5 @@
 ﻿using FirebaseAdmin.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Data.Models;
 using System;
@@ -34,6 +35,7 @@ namespace QutebaApp_API.Controllers
 
         }
 
+        [Authorize]
         [HttpGet]
         [Route("all")]
         public async Task<ActionResult<IEnumerable<UserRecord>>> GetAllUsers()

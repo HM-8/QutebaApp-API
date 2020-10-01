@@ -1,10 +1,12 @@
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using System;
 
 namespace QutebaApp_API
@@ -34,6 +36,23 @@ namespace QutebaApp_API
             Console.WriteLine($"DEFAULT >>>> {FirebaseApp.DefaultInstance.Name}");
             Console.WriteLine($"APP >>>> {app.Options.ProjectId}");
 
+            //adding authentication 
+            services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+                .AddJwtBearer(options =>
+                {
+                    options.Authority = Configuration.GetValue<string>("Firebase:issuer");
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidIssuer = Configuration.GetValue<string>("Firebase:issuer"),
+                        ValidateAudience = true,
+                        ValidAudience = Configuration.GetValue<string>("Firebase:project_id"),
+                        ValidateLifetime = true,
+                        ValidateActor = true
+                    };
+                    options.Validate();
+                });
+
             services.AddSwaggerGen();
         }
 
@@ -49,6 +68,7 @@ namespace QutebaApp_API
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();

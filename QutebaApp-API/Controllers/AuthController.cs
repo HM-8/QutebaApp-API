@@ -35,31 +35,5 @@ namespace QutebaApp_API.Controllers
             catch (Exception e) { throw e; }
 
         }
-
-        [Authorize]
-        [HttpGet]
-        [Route("AllUsers")]
-        public async Task<ActionResult<IEnumerable<UserRecord>>> GetAllUsers()
-        {
-            List<UserRecord> users = new List<UserRecord>();
-
-            var responses = FirebaseAuth.DefaultInstance.ListUsersAsync(null).AsRawResponses().GetEnumerator();
-
-            Console.WriteLine($"RESPONSES >>> {responses}");
-
-            while (await responses.MoveNext())
-            {
-                ExportedUserRecords result = responses.Current;
-
-                foreach (ExportedUserRecord record in result.Users)
-                {
-                    UserRecord user = record;
-                    users.Add(user);
-                }
-            }
-            return Ok(users);
-
-        }
-
     }
 }

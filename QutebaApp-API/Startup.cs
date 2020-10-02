@@ -8,6 +8,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using QutebaApp_Core.Services.Implementations;
+using QutebaApp_Core.Services.Interfaces;
 using System;
 
 namespace QutebaApp_API
@@ -25,6 +27,8 @@ namespace QutebaApp_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+
+            services.AddScoped<IAuthService, AuthService>();
 
             string path = @"C:\Users\Medhin\Desktop\HIWOT\WorkSpace\QutebaAPP Project\Documents\service-account-file-qutebaapp.json";
 

@@ -1,5 +1,5 @@
-﻿using FirebaseAdmin.Auth;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
 using System;
@@ -11,6 +11,12 @@ namespace QutebaApp_API.Controllers
     [ApiController]
     public class AuthController : Controller
     {
+        private readonly IAuthService _authService;
+
+        public AuthController(IAuthService authService)
+        {
+            _authService = authService;
+        }
 
         [HttpPost]
         [Route("CreateAccountWithEmailAndPassword")]
@@ -18,29 +24,7 @@ namespace QutebaApp_API.Controllers
         {
             try
             {
-                UserRecordArgs userDetails = new UserRecordArgs()
-                {
-                    DisplayName = authenticateUserVM.DisplayName,
-                    Email = authenticateUserVM.Email,
-                    Password = authenticateUserVM.Password,
-                };
-
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userDetails);
-
-                User createdUser = new User()
-                {
-                    ID = userRecord.Uid,
-                    DisplayName = userRecord.DisplayName,
-                    Email = userRecord.Email,
-                    EmailVerified = userRecord.EmailVerified,
-                    PhotoUrl = userRecord.PhotoUrl,
-                    CreatedAccountWith = userRecord.ProviderData[0].ProviderId,
-                    CreationTimestamp = userRecord.UserMetaData.CreationTimestamp,
-                    LastSignInTimestamp = userRecord.UserMetaData.LastSignInTimestamp,
-                    LastRefreshTimestamp = userRecord.UserMetaData.LastRefreshTimestamp
-                };
-
-                return createdUser;
+                return await this._authService.CreateAccountWithEmailAndPassword(authenticateUserVM);
             }
             catch (Exception e) { throw e; }
 

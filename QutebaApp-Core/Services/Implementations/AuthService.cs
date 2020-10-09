@@ -1,6 +1,5 @@
 ﻿using FirebaseAdmin.Auth;
 using QutebaApp_Core.Services.Interfaces;
-using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
 using System;
 using System.Threading.Tasks;
@@ -9,10 +8,13 @@ namespace QutebaApp_Core.Services.Implementations
 {
     public class AuthService : IAuthService
     {
-        public async Task<User> CreateAccountWithEmailAndPassword(AuthenticateUserVM authenticateUserVM)
+        public bool CreateAccountWithEmailAndPassword(AuthenticateUserVM authenticateUserVM)
         {
             try
             {
+                bool isCompleted = false;
+                string uid = null;
+
                 UserRecordArgs userDetails = new UserRecordArgs()
                 {
                     DisplayName = authenticateUserVM.DisplayName,
@@ -20,22 +22,20 @@ namespace QutebaApp_Core.Services.Implementations
                     Password = authenticateUserVM.Password,
                 };
 
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(userDetails);
-
-                User createdUser = new User()
+                if( userDetails.DisplayName != null && userDetails.Email != null && userDetails.Password != null)
                 {
-                    ID = userRecord.Uid,
-                    DisplayName = userRecord.DisplayName,
-                    Email = userRecord.Email,
-                    EmailVerified = userRecord.EmailVerified,
-                    PhotoUrl = userRecord.PhotoUrl,
-                    CreatedAccountWith = userRecord.ProviderData[0].ProviderId,
-                    CreationTimestamp = userRecord.UserMetaData.CreationTimestamp,
-                    LastSignInTimestamp = userRecord.UserMetaData.LastSignInTimestamp,
-                    LastRefreshTimestamp = userRecord.UserMetaData.LastRefreshTimestamp
-                };
+                    uid = FirebaseAuth.DefaultInstance.CreateUserAsync(userDetails).Result.Uid;
+                }
 
-                return createdUser;
+
+                if (uid != null)
+                {
+                    isCompleted = true;
+
+                    return isCompleted;
+                }
+
+                return isCompleted;
             }
             catch (Exception e) { throw e; }
         }

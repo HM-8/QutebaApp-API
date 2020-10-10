@@ -2,7 +2,6 @@
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.ViewModels;
 using System;
-using System.Threading.Tasks;
 
 namespace QutebaApp_Core.Services.Implementations
 {
@@ -22,7 +21,7 @@ namespace QutebaApp_Core.Services.Implementations
                     Password = authenticateUserVM.Password,
                 };
 
-                if( userDetails.DisplayName != null && userDetails.Email != null && userDetails.Password != null)
+                if (userDetails.DisplayName != null && userDetails.Email != null && userDetails.Password != null)
                 {
                     uid = FirebaseAuth.DefaultInstance.CreateUserAsync(userDetails).Result.Uid;
                 }

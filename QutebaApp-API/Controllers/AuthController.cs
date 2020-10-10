@@ -2,7 +2,6 @@
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.ViewModels;
 using System;
-using System.Threading.Tasks;
 
 namespace QutebaApp_API.Controllers
 {

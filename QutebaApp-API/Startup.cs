@@ -104,7 +104,8 @@ namespace QutebaApp_API
             app.UseAuthorization();
 
             app.UseSwagger();
-            app.UseSwaggerUI(s => {
+            app.UseSwaggerUI(s =>
+            {
                 s.SwaggerEndpoint("/swagger/v1/swagger.json", "QutebaApp-API");
             });
 

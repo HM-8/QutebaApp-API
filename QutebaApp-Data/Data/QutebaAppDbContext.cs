@@ -1,19 +1,17 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using QutebaApp_Data.Models;
 
 namespace QutebaApp_Data.Data
 {
-    public partial class quteba_appContext : DbContext
+    public class QutebaAppDbContext : DbContext
     {
-        public IConfiguration _configuration { get; }
 
-        public quteba_appContext(IConfiguration configuration)
+        public QutebaAppDbContext()
         {
-            _configuration = configuration;
+
         }
 
-        public quteba_appContext(DbContextOptions<quteba_appContext> options)
+        public QutebaAppDbContext(DbContextOptions options)
             : base(options)
         {
         }
@@ -23,14 +21,6 @@ namespace QutebaApp_Data.Data
         public virtual DbSet<Profile> Profiles { get; set; }
         public virtual DbSet<Role> Roles { get; set; }
         public virtual DbSet<Spending> Spendings { get; set; }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseMySQL(_configuration.GetConnectionString("DefaultConnection"));
-            }
-        }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -182,9 +172,7 @@ namespace QutebaApp_Data.Data
                     .HasConstraintName("user_ID");
             });
 
-            OnModelCreatingPartial(modelBuilder);
         }
 
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
     }
 }

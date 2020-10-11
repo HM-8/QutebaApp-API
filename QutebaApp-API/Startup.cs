@@ -3,6 +3,7 @@ using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -10,6 +11,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using QutebaApp_Core.Services.Implementations;
 using QutebaApp_Core.Services.Interfaces;
+using QutebaApp_Data.Data;
 using System;
 
 namespace QutebaApp_API
@@ -27,6 +29,8 @@ namespace QutebaApp_API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddNewtonsoftJson();
+
+            services.AddDbContext<QutebaAppDbContext>(d => d.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAuthService, AuthService>();
 
@@ -57,6 +61,8 @@ namespace QutebaApp_API
                     };
                     options.Validate();
                 });
+
+            services.AddAuthorization();
 
             services.AddSwaggerGen(s =>
             {

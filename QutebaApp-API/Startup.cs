@@ -12,7 +12,6 @@ using Microsoft.OpenApi.Models;
 using QutebaApp_Core.Services.Implementations;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Data;
-using System;
 
 namespace QutebaApp_API
 {
@@ -25,7 +24,7 @@ namespace QutebaApp_API
 
         public IConfiguration Configuration { get; }
 
-        // This method gets called by the runtime. Use this method to add services to the container.
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers().AddNewtonsoftJson();
@@ -43,10 +42,6 @@ namespace QutebaApp_API
                 Credential = GoogleCredential.FromFile(path)
             });
 
-            Console.WriteLine($"DEFAULT >>>> {FirebaseApp.DefaultInstance.Name}");
-            Console.WriteLine($"APP >>>> {app.Options.ProjectId}");
-
-            //adding authentication 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
                 {

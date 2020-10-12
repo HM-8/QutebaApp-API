@@ -118,5 +118,28 @@ namespace QutebaApp_API.Controllers
             }
             catch (Exception e) { throw e; }
         }
+
+        [HttpPost]
+        [Route("login/admin")]
+        [Authorize(Roles = "admin")]
+        public async Task<ActionResult<AuthenticatedAdminVM>> LogInAdmin([FromForm] string token)
+        {
+            try
+            {
+                GeneralUserVM generalUserVM = await authService.Login(token);
+
+                AuthenticatedAdminVM authenticatedAdminVM = new AuthenticatedAdminVM()
+                {
+                    UID = generalUserVM.UID,
+                    Name = generalUserVM.Name,
+                    Email = generalUserVM.Email,
+                    Claims = generalUserVM.Claims
+                };
+
+                return new JsonResult(authenticatedAdminVM);
+
+            }
+            catch (Exception e) { throw e; }
+        }
     }
 }

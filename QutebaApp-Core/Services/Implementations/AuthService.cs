@@ -1,5 +1,6 @@
 ﻿using FirebaseAdmin.Auth;
 using QutebaApp_Core.Services.Interfaces;
+using QutebaApp_Data.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -8,6 +9,31 @@ namespace QutebaApp_Core.Services.Implementations
 {
     public class AuthService : IAuthService
     {
+        public async Task<GeneralUserVM> Register(string token, string role)
+        {
+            try
+            {
+                // add role to claim and save user in database and return user
+                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
+
+                await SetCustomClaims(decodedToken.Uid, role);
+
+                UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserAsync(decodedToken.Uid);
+
+                GeneralUserVM generalUserVM = new GeneralUserVM()
+                {
+                    UID = userRecord.Uid,
+                    Name = userRecord.DisplayName,
+                    Email = userRecord.Email,
+                    Claims = userRecord.CustomClaims
+                };
+
+                return generalUserVM;
+
+            }
+            catch (Exception e) { throw e; }
+        }
+
         public async Task SetCustomClaims(string uid, string role)
         {
             try

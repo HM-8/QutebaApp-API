@@ -34,6 +34,26 @@ namespace QutebaApp_Core.Services.Implementations
             catch (Exception e) { throw e; }
         }
 
+        public async Task<GeneralUserVM> Login(string token)
+        {
+            try
+            {
+                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
+                UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserAsync(decodedToken.Uid);
+
+                GeneralUserVM generalUserVM = new GeneralUserVM()
+                {
+                    UID = userRecord.Uid,
+                    Name = userRecord.DisplayName,
+                    Email = userRecord.Email,
+                    Claims = userRecord.CustomClaims
+                };
+
+                return generalUserVM;
+            }
+            catch (Exception e) { throw e; }
+        }
+
         public async Task SetCustomClaims(string uid, string role)
         {
             try

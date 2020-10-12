@@ -1,4 +1,5 @@
 ﻿using FirebaseAdmin.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
@@ -85,6 +86,35 @@ namespace QutebaApp_API.Controllers
                 };
 
                 return new JsonResult(authenticatedAdminVM);
+            }
+            catch (Exception e) { throw e; }
+        }
+
+        [HttpPost]
+        [Route("login/user")]
+        [Authorize(Roles = "user")]
+        public async Task<ActionResult<AuthenticatedUserVM>> LogInUser([FromForm] string token)
+        {
+            try
+            {
+                GeneralUserVM generalUserVM = await authService.Login(token);
+
+                AuthenticatedUserVM authenticatedUserVM = new AuthenticatedUserVM()
+                {
+                    UID = generalUserVM.UID,
+                    Name = generalUserVM.Name,
+                    Email = generalUserVM.Email,
+                    Profile = new Profile()
+                    {
+                        UserUid = generalUserVM.UID,
+                        PhotoUrl = null,
+                        Salary = 10000,
+                        SalaryCreationTime = null
+                    },
+                    Claims = generalUserVM.Claims
+                };
+
+                return new JsonResult(authenticatedUserVM);
             }
             catch (Exception e) { throw e; }
         }

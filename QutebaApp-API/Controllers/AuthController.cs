@@ -1,5 +1,4 @@
-﻿using FirebaseAdmin.Auth;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
@@ -14,26 +13,28 @@ namespace QutebaApp_API.Controllers
     public class AuthController : Controller
     {
         private IAuthService authService = null;
+        private IFirebaseService firebaseService = null;
 
-        public AuthController(IAuthService authService)
+        public AuthController(IAuthService authService, IFirebaseService firebaseService)
         {
             this.authService = authService;
+            this.firebaseService = firebaseService;
         }
 
         [HttpPost]
         [Route("getTokenInfo")]
         public async Task<ActionResult<GeneralUserVM>> GetTokenInfo([FromForm] string token)
         {
-            FirebaseToken firebaseToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
-
-            UserRecord user = await FirebaseAuth.DefaultInstance.GetUserAsync(firebaseToken.Uid);
+            var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
+            string uid = verifiedToken.Uid;
+            var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
 
             GeneralUserVM generalUserVM = new GeneralUserVM()
             {
-                UID = user.Uid,
-                Name = user.DisplayName,
-                Email = user.Email,
-                Claims = user.CustomClaims
+                UID = firebaseUser.Uid,
+                Name = firebaseUser.DisplayName,
+                Email = firebaseUser.Email,
+                Claims = firebaseUser.CustomClaims
             };
 
             return new JsonResult(generalUserVM);
@@ -70,6 +71,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("register/admin")]
+        //authorized only for the super admin
         public async Task<ActionResult<AuthenticatedAdminVM>> RegisterAdmin([FromForm] string token)
         {
             try

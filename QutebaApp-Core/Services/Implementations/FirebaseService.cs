@@ -1,6 +1,7 @@
 ﻿using FirebaseAdmin.Auth;
 using QutebaApp_Core.Services.Interfaces;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace QutebaApp_Core.Services.Implementations
@@ -18,6 +19,15 @@ namespace QutebaApp_Core.Services.Implementations
                 }
 
                 return null;
+            }
+            catch (Exception e) { throw e; }
+        }
+
+        public Task SetCustomFirebaseUserClaims(string uid, IReadOnlyDictionary<string, object> claims)
+        {
+            try
+            {
+                return FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(uid, claims);
             }
             catch (Exception e) { throw e; }
         }

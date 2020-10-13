@@ -21,5 +21,20 @@ namespace QutebaApp_Core.Services.Implementations
             }
             catch (Exception e) { throw e; }
         }
+
+        public async Task<UserRecord> GetFirebaseUserById(string uid)
+        {
+            try
+            {
+                if (uid != null)
+                {
+                    UserRecord firebaseUser = await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
+                    return firebaseUser;
+                }
+
+                return null;
+            }
+            catch (Exception e) { throw e; }
+        }
     }
 }

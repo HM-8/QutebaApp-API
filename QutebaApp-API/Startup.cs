@@ -32,6 +32,7 @@ namespace QutebaApp_API
             services.AddDbContext<QutebaAppDbContext>(d => d.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IFirebaseService, FirebaseService>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
             string path = @"C:\Users\Medhin\Desktop\HIWOT\WorkSpace\QutebaAPP Project\Documents\service-account-file-qutebaapp.json";

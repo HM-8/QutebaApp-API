@@ -1,6 +1,10 @@
-﻿namespace QutebaApp_Core.Services.Interfaces
+﻿using FirebaseAdmin.Auth;
+using System.Threading.Tasks;
+
+namespace QutebaApp_Core.Services.Interfaces
 {
     public interface IFirebaseService
     {
+        Task<FirebaseToken> VerifyFirebaseToken(string token);
     }
 }

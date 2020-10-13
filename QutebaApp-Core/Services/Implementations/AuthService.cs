@@ -1,5 +1,4 @@
-﻿using FirebaseAdmin.Auth;
-using QutebaApp_Core.Services.Interfaces;
+﻿using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -9,23 +8,33 @@ namespace QutebaApp_Core.Services.Implementations
 {
     public class AuthService : IAuthService
     {
+        private IFirebaseService firebaseService;
+
+        public AuthService(IFirebaseService firebaseService)
+        {
+            this.firebaseService = firebaseService;
+        }
+
+
         public async Task<GeneralUserVM> Register(string token, string role)
         {
             try
             {
                 // add role to claim and save user in database and return user
-                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
 
-                await SetCustomClaims(decodedToken.Uid, role);
+                var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
+                string uid = verifiedToken.Uid;
 
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserAsync(decodedToken.Uid);
+                await SetCustomClaims(uid, role);
+
+                var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
 
                 GeneralUserVM generalUserVM = new GeneralUserVM()
                 {
-                    UID = userRecord.Uid,
-                    Name = userRecord.DisplayName,
-                    Email = userRecord.Email,
-                    Claims = userRecord.CustomClaims
+                    UID = firebaseUser.Uid,
+                    Name = firebaseUser.DisplayName,
+                    Email = firebaseUser.Email,
+                    Claims = firebaseUser.CustomClaims
                 };
 
                 return generalUserVM;
@@ -38,15 +47,16 @@ namespace QutebaApp_Core.Services.Implementations
         {
             try
             {
-                FirebaseToken decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token);
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserAsync(decodedToken.Uid);
+                var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
+                string uid = verifiedToken.Uid;
+                var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
 
                 GeneralUserVM generalUserVM = new GeneralUserVM()
                 {
-                    UID = userRecord.Uid,
-                    Name = userRecord.DisplayName,
-                    Email = userRecord.Email,
-                    Claims = userRecord.CustomClaims
+                    UID = firebaseUser.Uid,
+                    Name = firebaseUser.DisplayName,
+                    Email = firebaseUser.Email,
+                    Claims = firebaseUser.CustomClaims
                 };
 
                 return generalUserVM;
@@ -58,9 +68,9 @@ namespace QutebaApp_Core.Services.Implementations
         {
             try
             {
-                UserRecord userRecord = await FirebaseAuth.DefaultInstance.GetUserAsync(uid);
+                var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
 
-                Dictionary<string, object> userClaims = (Dictionary<string, object>)userRecord.CustomClaims;
+                Dictionary<string, object> userClaims = (Dictionary<string, object>)firebaseUser.CustomClaims;
 
                 bool isUser = userClaims.ContainsValue(role);
 
@@ -71,9 +81,9 @@ namespace QutebaApp_Core.Services.Implementations
 
                     IReadOnlyDictionary<string, object> claims = keyClaims;
 
-                    FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(userRecord.Uid, claims).Wait();
+                    await firebaseService.SetCustomFirebaseUserClaims(uid, claims);
 
-                    Console.WriteLine($"USER CLAIM >>>> {userRecord.CustomClaims}");
+                    Console.WriteLine($"USER CLAIM >>>> {firebaseUser.CustomClaims}");
 
                 }
 

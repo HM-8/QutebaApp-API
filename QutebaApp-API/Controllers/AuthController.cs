@@ -4,6 +4,8 @@ using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace QutebaApp_API.Controllers
@@ -23,13 +25,38 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("getTokenInfo")]
-        public async Task<ActionResult<GeneralUserVM>> GetTokenInfo([FromForm] string token)
+        public async Task<ActionResult> GetTokenInfo([FromForm] string token)
         {
             var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
             string uid = verifiedToken.Uid;
+
             var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
 
-            GeneralUserVM generalUserVM = new GeneralUserVM()
+            Dictionary<string, object> claims = (Dictionary<string, object>)firebaseUser.CustomClaims;
+
+            bool isUser = claims.ContainsValue("user");
+
+            if (isUser)
+            {
+                AuthenticatedUserVM authenticatedUserVM = new AuthenticatedUserVM()
+                {
+                    UID = firebaseUser.Uid,
+                    Name = firebaseUser.DisplayName,
+                    Email = firebaseUser.Email,
+                    Profile = new Profile()
+                    { 
+                        UserUid = firebaseUser.Uid,
+                        PhotoUrl = null,
+                        Salary = 20000,
+                        SalaryCreationTime = DateTime.Now
+                    },
+                    Claims = firebaseUser.CustomClaims
+                };
+
+                return new JsonResult(authenticatedUserVM);
+            }
+
+            AuthenticatedAdminVM authenticatedAdminVM = new AuthenticatedAdminVM()
             {
                 UID = firebaseUser.Uid,
                 Name = firebaseUser.DisplayName,
@@ -37,7 +64,7 @@ namespace QutebaApp_API.Controllers
                 Claims = firebaseUser.CustomClaims
             };
 
-            return new JsonResult(generalUserVM);
+            return new JsonResult(authenticatedAdminVM);
         }
 
         [HttpPost]

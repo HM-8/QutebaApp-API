@@ -9,6 +9,5 @@ namespace QutebaApp_Core.Services.Interfaces
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);
-        void Save();
     }
 }

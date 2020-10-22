@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace QutebaApp_Data.Models
 {
@@ -6,12 +7,13 @@ namespace QutebaApp_Data.Models
     {
         public Role()
         {
-            Accounts = new HashSet<Account>();
+            Users = new HashSet<User>();
         }
 
         public int Id { get; set; }
         public string RoleName { get; set; }
+        public DateTime RoleCreationTime { get; set; }
 
-        public virtual ICollection<Account> Accounts { get; set; }
+        public virtual ICollection<User> Users { get; set; }
     }
 }

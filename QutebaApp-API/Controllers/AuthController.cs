@@ -19,7 +19,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("signup-Email")]
-        public IActionResult SignUpEmail([FromForm] AuthenticateUserVM authenticateUser, int pageId)
+        public IActionResult SignUpEmail([FromBody] AuthenticateUserVM authenticateUser, int pageId)
         {
             try
             {
@@ -51,7 +51,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("signin-Email")]
-        public IActionResult SignInEmail([FromForm] AuthenticateUserVM authenticateUser)
+        public IActionResult SignInEmail([FromBody] AuthenticateUserVM authenticateUser)
         {
             try
             {
@@ -59,9 +59,7 @@ namespace QutebaApp_API.Controllers
 
                 if (authenticatedUser == null) throw new Exception("User is unauthorized or credential does not match");
 
-                string role = "me";
-
-                var claims = authService.SetCustomClaims(authenticatedUser.ID, role);
+                var claims = authService.SetCustomClaims(authenticatedUser.ID, authenticatedUser.Role);
 
                 var userDetails = authService.GetToken(authenticatedUser, claims);
 

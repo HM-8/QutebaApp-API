@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using QutebaApp_Data.Models;
 
 namespace QutebaApp_Data.Data
@@ -22,7 +20,6 @@ namespace QutebaApp_Data.Data
         public virtual DbSet<Spending> Spendings { get; set; }
         public virtual DbSet<User> Users { get; set; }
 
-        
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

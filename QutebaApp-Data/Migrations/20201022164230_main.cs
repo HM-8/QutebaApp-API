@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using MySql.Data.EntityFrameworkCore.Metadata;
-using System;
 
 namespace QutebaApp_Data.Migrations
 {
@@ -14,8 +14,8 @@ namespace QutebaApp_Data.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    name = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
-                    creation_time = table.Column<DateTime>(nullable: false)
+                    category_name = table.Column<string>(maxLength: 45, nullable: false),
+                    category_creation_time = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -28,7 +28,8 @@ namespace QutebaApp_Data.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    role = table.Column<string>(unicode: false, maxLength: 45, nullable: false)
+                    role_name = table.Column<string>(maxLength: 45, nullable: false),
+                    role_creation_time = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -36,22 +37,21 @@ namespace QutebaApp_Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "accounts",
+                name: "users",
                 columns: table => new
                 {
-                    UID = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    email = table.Column<string>(maxLength: 45, nullable: false),
+                    password = table.Column<string>(maxLength: 45, nullable: false),
+                    fullname = table.Column<string>(maxLength: 45, nullable: false),
                     role_ID = table.Column<int>(nullable: false),
-                    display_name = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
-                    email = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
-                    email_verified = table.Column<byte>(type: "tinyint(1)", nullable: true, defaultValueSql: "'0'"),
-                    created_account_with = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
-                    creation_time = table.Column<DateTime>(nullable: false),
-                    last_signin_time = table.Column<DateTime>(nullable: true),
-                    last_refresh_time = table.Column<DateTime>(nullable: true)
+                    created_account_with = table.Column<string>(maxLength: 45, nullable: false),
+                    user_creation_time = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PRIMARY", x => x.UID);
+                    table.PrimaryKey("PK_users", x => x.ID);
                     table.ForeignKey(
                         name: "role_ID",
                         column: x => x.role_ID,
@@ -64,19 +64,20 @@ namespace QutebaApp_Data.Migrations
                 name: "profiles",
                 columns: table => new
                 {
-                    user_UID = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
-                    photo_url = table.Column<string>(unicode: false, maxLength: 255, nullable: true),
-                    salary = table.Column<double>(nullable: true),
-                    salary_creation_time = table.Column<DateTime>(nullable: true)
+                    user_ID = table.Column<int>(nullable: false),
+                    username = table.Column<string>(maxLength: 45, nullable: false),
+                    photo_url = table.Column<string>(maxLength: 255, nullable: true),
+                    income = table.Column<double>(nullable: true),
+                    income_creation_time = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PRIMARY", x => x.user_UID);
+                    table.PrimaryKey("PRIMARY", x => x.user_ID);
                     table.ForeignKey(
-                        name: "user_UID",
-                        column: x => x.user_UID,
-                        principalTable: "accounts",
-                        principalColumn: "UID",
+                        name: "user_id",
+                        column: x => x.user_ID,
+                        principalTable: "users",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -86,11 +87,11 @@ namespace QutebaApp_Data.Migrations
                 {
                     ID = table.Column<int>(nullable: false)
                         .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    user_UID = table.Column<string>(unicode: false, maxLength: 45, nullable: false),
+                    user_ID = table.Column<int>(nullable: false),
                     category_ID = table.Column<int>(nullable: false),
                     amount = table.Column<double>(nullable: false),
                     reason = table.Column<string>(nullable: true),
-                    creation_time = table.Column<DateTime>(nullable: false)
+                    spending_creation_time = table.Column<DateTime>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -102,17 +103,36 @@ namespace QutebaApp_Data.Migrations
                         principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
-                        name: "user_ID",
-                        column: x => x.user_UID,
+                        name: "user_s_id",
+                        column: x => x.user_ID,
                         principalTable: "profiles",
-                        principalColumn: "user_UID",
+                        principalColumn: "user_ID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
-                name: "role_ID_idx",
-                table: "accounts",
-                column: "role_ID");
+                name: "name_UNIQUE",
+                table: "categories",
+                column: "category_name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "user_ID_UNIQUE",
+                table: "profiles",
+                column: "user_ID",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "username_UNIQUE",
+                table: "profiles",
+                column: "username",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "role_name_UNIQUE",
+                table: "roles",
+                column: "role_name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "category_ID_idx",
@@ -120,9 +140,20 @@ namespace QutebaApp_Data.Migrations
                 column: "category_ID");
 
             migrationBuilder.CreateIndex(
-                name: "user_ID_idx",
+                name: "user_id_idx",
                 table: "spendings",
-                column: "user_UID");
+                column: "user_ID");
+
+            migrationBuilder.CreateIndex(
+                name: "email_UNIQUE",
+                table: "users",
+                column: "email",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "role_ID_idx",
+                table: "users",
+                column: "role_ID");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -137,7 +168,7 @@ namespace QutebaApp_Data.Migrations
                 name: "profiles");
 
             migrationBuilder.DropTable(
-                name: "accounts");
+                name: "users");
 
             migrationBuilder.DropTable(
                 name: "roles");

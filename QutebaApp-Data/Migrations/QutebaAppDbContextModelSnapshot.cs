@@ -14,68 +14,8 @@ namespace QutebaApp_Data.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.8")
+                .HasAnnotation("ProductVersion", "3.1.9")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
-
-            modelBuilder.Entity("QutebaApp_Data.Models.Account", b =>
-                {
-                    b.Property<string>("Uid")
-                        .HasColumnName("UID")
-                        .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
-
-                    b.Property<string>("CreatedAccountWith")
-                        .IsRequired()
-                        .HasColumnName("created_account_with")
-                        .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
-
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("creation_time")
-                        .HasColumnType("datetime");
-
-                    b.Property<string>("DisplayName")
-                        .IsRequired()
-                        .HasColumnName("display_name")
-                        .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnName("email")
-                        .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
-
-                    b.Property<byte?>("EmailVerified")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnName("email_verified")
-                        .HasColumnType("tinyint(1)")
-                        .HasDefaultValueSql("'0'");
-
-                    b.Property<DateTime?>("LastRefreshTime")
-                        .HasColumnName("last_refresh_time")
-                        .HasColumnType("datetime");
-
-                    b.Property<DateTime?>("LastSigninTime")
-                        .HasColumnName("last_signin_time")
-                        .HasColumnType("datetime");
-
-                    b.Property<int>("RoleId")
-                        .HasColumnName("role_ID")
-                        .HasColumnType("int");
-
-                    b.HasKey("Uid")
-                        .HasName("PRIMARY");
-
-                    b.HasIndex("RoleId")
-                        .HasName("role_ID_idx");
-
-                    b.ToTable("accounts");
-                });
 
             modelBuilder.Entity("QutebaApp_Data.Models.Category", b =>
                 {
@@ -84,46 +24,60 @@ namespace QutebaApp_Data.Migrations
                         .HasColumnName("ID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("creation_time")
+                    b.Property<DateTime>("CategoryCreationTime")
+                        .HasColumnName("category_creation_time")
                         .HasColumnType("datetime");
 
-                    b.Property<string>("Name")
+                    b.Property<string>("CategoryName")
                         .IsRequired()
-                        .HasColumnName("name")
+                        .HasColumnName("category_name")
                         .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
+                        .HasMaxLength(45);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryName")
+                        .IsUnique()
+                        .HasName("name_UNIQUE");
 
                     b.ToTable("categories");
                 });
 
             modelBuilder.Entity("QutebaApp_Data.Models.Profile", b =>
                 {
-                    b.Property<string>("UserUid")
-                        .HasColumnName("user_UID")
-                        .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_ID")
+                        .HasColumnType("int");
+
+                    b.Property<double?>("Income")
+                        .HasColumnName("income")
+                        .HasColumnType("double");
+
+                    b.Property<DateTime>("IncomeCreationTime")
+                        .HasColumnName("income_creation_time")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("PhotoUrl")
                         .HasColumnName("photo_url")
                         .HasColumnType("varchar(255)")
-                        .HasMaxLength(255)
-                        .IsUnicode(false);
+                        .HasMaxLength(255);
 
-                    b.Property<double?>("Salary")
-                        .HasColumnName("salary")
-                        .HasColumnType("double");
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnName("username")
+                        .HasColumnType("varchar(45)")
+                        .HasMaxLength(45);
 
-                    b.Property<DateTime?>("SalaryCreationTime")
-                        .HasColumnName("salary_creation_time")
-                        .HasColumnType("datetime");
-
-                    b.HasKey("UserUid")
+                    b.HasKey("UserId")
                         .HasName("PRIMARY");
+
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasName("user_ID_UNIQUE");
+
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasName("username_UNIQUE");
 
                     b.ToTable("profiles");
                 });
@@ -135,14 +89,21 @@ namespace QutebaApp_Data.Migrations
                         .HasColumnName("ID")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("RoleCreationTime")
+                        .HasColumnName("role_creation_time")
+                        .HasColumnType("datetime");
+
                     b.Property<string>("RoleName")
                         .IsRequired()
-                        .HasColumnName("role")
+                        .HasColumnName("role_name")
                         .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
+                        .HasMaxLength(45);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("RoleName")
+                        .IsUnique()
+                        .HasName("role_name_UNIQUE");
 
                     b.ToTable("roles");
                 });
@@ -162,47 +123,86 @@ namespace QutebaApp_Data.Migrations
                         .HasColumnName("category_ID")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("CreationTime")
-                        .HasColumnName("creation_time")
-                        .HasColumnType("datetime");
-
                     b.Property<string>("Reason")
                         .HasColumnName("reason")
                         .HasColumnType("text");
 
-                    b.Property<string>("UserUid")
-                        .IsRequired()
-                        .HasColumnName("user_UID")
-                        .HasColumnType("varchar(45)")
-                        .HasMaxLength(45)
-                        .IsUnicode(false);
+                    b.Property<DateTime>("SpendingCreationTime")
+                        .HasColumnName("spending_creation_time")
+                        .HasColumnType("datetime");
+
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_ID")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId")
                         .HasName("category_ID_idx");
 
-                    b.HasIndex("UserUid")
-                        .HasName("user_ID_idx");
+                    b.HasIndex("UserId")
+                        .HasName("user_id_idx");
 
                     b.ToTable("spendings");
                 });
 
-            modelBuilder.Entity("QutebaApp_Data.Models.Account", b =>
+            modelBuilder.Entity("QutebaApp_Data.Models.User", b =>
                 {
-                    b.HasOne("QutebaApp_Data.Models.Role", "Role")
-                        .WithMany("Accounts")
-                        .HasForeignKey("RoleId")
-                        .HasConstraintName("role_ID")
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CreatedAccountWith")
+                        .IsRequired()
+                        .HasColumnName("created_account_with")
+                        .HasColumnType("varchar(45)")
+                        .HasMaxLength(45);
+
+                    b.Property<string>("Email")
+                        .IsRequired()
+                        .HasColumnName("email")
+                        .HasColumnType("varchar(45)")
+                        .HasMaxLength(45);
+
+                    b.Property<string>("Fullname")
+                        .IsRequired()
+                        .HasColumnName("fullname")
+                        .HasColumnType("varchar(45)")
+                        .HasMaxLength(45);
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnName("password")
+                        .HasColumnType("varchar(45)")
+                        .HasMaxLength(45);
+
+                    b.Property<int>("RoleId")
+                        .HasColumnName("role_ID")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("UserCreationTime")
+                        .HasColumnName("user_creation_time")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Email")
+                        .IsUnique()
+                        .HasName("email_UNIQUE");
+
+                    b.HasIndex("RoleId")
+                        .HasName("role_ID_idx");
+
+                    b.ToTable("users");
                 });
 
             modelBuilder.Entity("QutebaApp_Data.Models.Profile", b =>
                 {
-                    b.HasOne("QutebaApp_Data.Models.Account", "User")
-                        .WithOne("Profile")
-                        .HasForeignKey("QutebaApp_Data.Models.Profile", "UserUid")
-                        .HasConstraintName("user_UID")
+                    b.HasOne("QutebaApp_Data.Models.User", "User")
+                        .WithOne("Profiles")
+                        .HasForeignKey("QutebaApp_Data.Models.Profile", "UserId")
+                        .HasConstraintName("user_id")
                         .IsRequired();
                 });
 
@@ -216,8 +216,17 @@ namespace QutebaApp_Data.Migrations
 
                     b.HasOne("QutebaApp_Data.Models.Profile", "User")
                         .WithMany("Spendings")
-                        .HasForeignKey("UserUid")
-                        .HasConstraintName("user_ID")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("user_s_id")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("QutebaApp_Data.Models.User", b =>
+                {
+                    b.HasOne("QutebaApp_Data.Models.Role", "Role")
+                        .WithMany("Users")
+                        .HasForeignKey("RoleId")
+                        .HasConstraintName("role_ID")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

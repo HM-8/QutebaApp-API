@@ -9,7 +9,7 @@ namespace QutebaApp_Core.Services.Implementations
     {
         private bool isDisposed = false;
         private QutebaAppDbContext context;
-        GenericRepository<Account> accountRepository;
+        GenericRepository<User> userRepository;
         GenericRepository<Profile> profileRepository;
         GenericRepository<Role> roleRepository;
         GenericRepository<Category> categoryRepository;
@@ -20,15 +20,15 @@ namespace QutebaApp_Core.Services.Implementations
             this.context = context;
         }
 
-        public GenericRepository<Account> AccountRepository
+        public GenericRepository<User> UserRepository
         {
             get
             {
-                if (this.accountRepository == null)
+                if (this.userRepository == null)
                 {
-                    this.accountRepository = new GenericRepository<Account>(context);
+                    this.userRepository = new GenericRepository<User>(context);
                 }
-                return accountRepository;
+                return userRepository;
             }
         }
 

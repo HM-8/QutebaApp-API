@@ -1,5 +1,3 @@
-using FirebaseAdmin;
-using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -12,6 +10,7 @@ using Microsoft.OpenApi.Models;
 using QutebaApp_Core.Services.Implementations;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Data;
+using System.Text;
 
 namespace QutebaApp_API
 {
@@ -32,31 +31,33 @@ namespace QutebaApp_API
             services.AddDbContext<QutebaAppDbContext>(d => d.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddScoped<IAuthService, AuthService>();
-            services.AddScoped<IFirebaseService, FirebaseService>();
+            services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 
-            string path = @"C:\Users\Medhin\Desktop\HIWOT\WorkSpace\QutebaAPP Project\Documents\service-account-file-qutebaapp.json";
-
-            var app = FirebaseApp.Create(new AppOptions()
-            {
-                ProjectId = Configuration.GetValue<string>("Firebase:project_id"),
-                Credential = GoogleCredential.FromFile(path)
-            });
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                .AddJwtBearer(options =>
+                .AddJwtBearer(jwtoptions =>
                 {
-                    options.Authority = Configuration.GetValue<string>("Firebase:issuer");
-                    options.TokenValidationParameters = new TokenValidationParameters
+                    jwtoptions.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateIssuer = true,
-                        ValidIssuer = Configuration.GetValue<string>("Firebase:issuer"),
                         ValidateAudience = true,
-                        ValidAudience = Configuration.GetValue<string>("Firebase:project_id"),
                         ValidateLifetime = true,
-                        ValidateActor = true
+                        ValidateActor = true,
+                        ValidateIssuerSigningKey = true,
+
+                        ValidIssuer = Configuration.GetValue<string>("Authentication:Jwt:Issuer"),
+                        ValidAudience = Configuration.GetValue<string>("Authentication:Jwt:Audience"),
+                        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Jwt:key"]))
                     };
-                    options.Validate();
+                    jwtoptions.Validate();
+                })
+                .AddGoogle(googleOptions =>
+                {
+                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
+
+                    googleOptions.ClientId = googleAuthNSection["ClientId"];
+                    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
                 });
 
             services.AddAuthorization();

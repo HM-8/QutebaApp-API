@@ -1,95 +1,118 @@
-﻿using QutebaApp_Core.Services.Interfaces;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using QutebaApp_Core.Services.Interfaces;
+using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
+using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
+using System.Security.Claims;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace QutebaApp_Core.Services.Implementations
 {
     public class AuthService : IAuthService
     {
-        private IFirebaseService firebaseService;
+        private readonly IUnitOfWork unitOfWork;
+        private readonly IConfiguration configuration;
 
-        public AuthService(IFirebaseService firebaseService)
+        public AuthService(IUnitOfWork unitOfWork, IConfiguration configuration)
         {
-            this.firebaseService = firebaseService;
+            this.unitOfWork = unitOfWork;
+            this.configuration = configuration;
         }
 
-
-        public async Task<GeneralUserVM> Register(string token, string role)
+        public UserVM Register(AuthenticateUserVM authenticateUser, string role, string createdAccountWith)
         {
             try
             {
-                // add role to claim and save user in database and return user
+                var roles = unitOfWork.RoleRepository.GetAll();
+                /*int roleId = roles.First(r => r.RoleName == role).Id;*/
 
-                var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
-                string uid = verifiedToken.Uid;
+                int roleId = 3;
 
-                await SetCustomClaims(uid, role);
-
-                var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
-
-                GeneralUserVM generalUserVM = new GeneralUserVM()
+                User userAccount = new User()
                 {
-                    UID = firebaseUser.Uid,
-                    Name = firebaseUser.DisplayName,
-                    Email = firebaseUser.Email,
-                    Claims = firebaseUser.CustomClaims
+                    Email = authenticateUser.Email,
+                    Password = authenticateUser.Password,
+                    Fullname = authenticateUser.FullName,
+                    RoleId = roleId,
+                    CreatedAccountWith = createdAccountWith,
+                    UserCreationTime = DateTime.Now
                 };
 
-                return generalUserVM;
 
-            }
-            catch (Exception e) { throw e; }
-        }
+                unitOfWork.UserRepository.Insert(userAccount);
 
-        public async Task<GeneralUserVM> Login(string token)
-        {
-            try
-            {
-                var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
-                string uid = verifiedToken.Uid;
-                var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
+                unitOfWork.Save();
 
-                GeneralUserVM generalUserVM = new GeneralUserVM()
+                var savedUser = unitOfWork.UserRepository.GetByEmail(a => a.Email == userAccount.Email);
+
+                return new UserVM
                 {
-                    UID = firebaseUser.Uid,
-                    Name = firebaseUser.DisplayName,
-                    Email = firebaseUser.Email,
-                    Claims = firebaseUser.CustomClaims
+                    ID = savedUser.Id,
+                    FullName = savedUser.Fullname,
+                    Email = savedUser.Email,
+                    Role = savedUser.Role.RoleName
                 };
 
-                return generalUserVM;
             }
             catch (Exception e) { throw e; }
         }
 
-        public async Task SetCustomClaims(string uid, string role)
+        public UserVM Login(AuthenticateUserVM authenticateUser)
         {
-            try
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<Claim> SetCustomClaims(int id, string role)
+        {
+            var user = unitOfWork.UserRepository.GetById(id);
+
+            var claims = new List<Claim>
+               {
+                  new Claim(ClaimTypes.Name, user.Fullname),
+                  new Claim(ClaimTypes.Email, user.Email),
+                  new Claim(ClaimTypes.Role, role)
+
+               };
+
+            return claims;
+        }
+
+        public AuthenticatedUserVM GetToken(UserVM user, IEnumerable<Claim> claims)
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Authentication:Jwt:key"]));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+             issuer: configuration["Authentication:Jwt:Issuer"],
+             audience: configuration["Authentication:Jwt:Audience"],
+             claims: claims,
+             notBefore: null,
+             expires: DateTime.Now.AddMinutes(double.Parse(configuration["Authentication:Jwt:ExpiryInMinutes"])),
+             signingCredentials: creds);
+
+            return new AuthenticatedUserVM
             {
-                var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiration = token.ValidTo,
+                ID = user.ID,
+                FullName = user.FullName,
+                Email = user.Email,
+                Claims = token.Claims
+            };
+        }
 
-                Dictionary<string, object> userClaims = (Dictionary<string, object>)firebaseUser.CustomClaims;
+        public string Encrypt(string stringToEncrypt)
+        {
+            byte[] bufferPassword = Encoding.ASCII.GetBytes(stringToEncrypt);
+            byte[] hashedPassword = HashAlgorithm.Create(configuration["Authentication:Hash"]).ComputeHash(bufferPassword);
+            string encryptedPassword = Convert.ToBase64String(hashedPassword);
 
-                bool isUser = userClaims.ContainsValue(role);
-
-                if (!isUser)
-                {
-                    Dictionary<string, object> keyClaims = new Dictionary<string, object>();
-                    keyClaims.Add("role", role);
-
-                    IReadOnlyDictionary<string, object> claims = keyClaims;
-
-                    await firebaseService.SetCustomFirebaseUserClaims(uid, claims);
-
-                    Console.WriteLine($"USER CLAIM >>>> {firebaseUser.CustomClaims}");
-
-                }
-
-
-            }
-            catch (Exception e) { throw e; }
+            return encryptedPassword;
         }
     }
 }

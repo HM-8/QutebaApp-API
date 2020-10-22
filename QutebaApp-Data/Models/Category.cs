@@ -11,8 +11,8 @@ namespace QutebaApp_Data.Models
         }
 
         public int Id { get; set; }
-        public string Name { get; set; }
-        public DateTime CreationTime { get; set; }
+        public string CategoryName { get; set; }
+        public DateTime CategoryCreationTime { get; set; }
 
         public virtual ICollection<Spending> Spendings { get; set; }
     }

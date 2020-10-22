@@ -10,12 +10,13 @@ namespace QutebaApp_Data.Models
             Spendings = new HashSet<Spending>();
         }
 
-        public string UserUid { get; set; }
+        public int UserId { get; set; }
+        public string Username { get; set; }
         public string PhotoUrl { get; set; }
-        public double? Salary { get; set; }
-        public DateTime? SalaryCreationTime { get; set; }
+        public double? Income { get; set; }
+        public DateTime IncomeCreationTime { get; set; }
 
-        public virtual Account User { get; set; }
+        public virtual User User { get; set; }
         public virtual ICollection<Spending> Spendings { get; set; }
     }
 }

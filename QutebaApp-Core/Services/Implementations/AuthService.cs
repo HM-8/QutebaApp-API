@@ -29,9 +29,9 @@ namespace QutebaApp_Core.Services.Implementations
             try
             {
                 var roles = unitOfWork.RoleRepository.GetAll();
-                /*int roleId = roles.First(r => r.RoleName == role).Id;*/
+                int roleId = roles.First(r => r.RoleName == role).Id;
 
-                int roleId = 3;
+                authenticateUser.Password = Encrypt(authenticateUser.Password);
 
                 User userAccount = new User()
                 {
@@ -48,7 +48,7 @@ namespace QutebaApp_Core.Services.Implementations
 
                 unitOfWork.Save();
 
-                var savedUser = unitOfWork.UserRepository.GetByEmail(a => a.Email == userAccount.Email);
+                var savedUser = unitOfWork.UserRepository.FindBy(a => a.Email == userAccount.Email);
 
                 return new UserVM
                 {
@@ -64,7 +64,23 @@ namespace QutebaApp_Core.Services.Implementations
 
         public UserVM Login(AuthenticateUserVM authenticateUser)
         {
-            throw new NotImplementedException();
+            try
+            {
+                authenticateUser.Password = Encrypt(authenticateUser.Password);
+
+                var queryUser = unitOfWork.UserRepository.FindBy(a => a.Email == authenticateUser.Email && a.Password == authenticateUser.Password);
+
+                queryUser.Role = unitOfWork.RoleRepository.GetById(queryUser.RoleId);
+
+                return new UserVM
+                {
+                    ID = queryUser.Id,
+                    FullName = queryUser.Fullname,
+                    Email = queryUser.Email,
+                    Role = queryUser.Role.RoleName
+                };
+            }
+            catch (Exception e) { throw e; }
         }
 
         public IEnumerable<Claim> SetCustomClaims(int id, string role)

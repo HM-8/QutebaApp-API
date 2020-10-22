@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace QutebaApp_Core.Services.Interfaces
 {
@@ -6,6 +8,7 @@ namespace QutebaApp_Core.Services.Interfaces
     {
         IEnumerable<T> GetAll();
         T GetById(object id);
+        T GetByEmail(Expression<Func<T, bool>> email);
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);

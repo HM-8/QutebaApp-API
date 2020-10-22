@@ -1,12 +1,8 @@
-﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
-using QutebaApp_Data.Models;
+using QutebaApp_Data.OtherModels;
 using QutebaApp_Data.ViewModels;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace QutebaApp_API.Controllers
 {
@@ -14,161 +10,93 @@ namespace QutebaApp_API.Controllers
     [ApiController]
     public class AuthController : Controller
     {
-        private IAuthService authService = null;
-        private IFirebaseService firebaseService = null;
-
-        public AuthController(IAuthService authService, IFirebaseService firebaseService)
+        private readonly IAuthService authService;
+        public AuthController(IAuthService authService)
         {
             this.authService = authService;
-            this.firebaseService = firebaseService;
         }
 
-        [HttpPost]
-        [Route("getTokenInfo")]
-        public async Task<ActionResult> GetTokenInfo([FromForm] string token)
-        {
-            var verifiedToken = await firebaseService.VerifyFirebaseToken(token);
-            string uid = verifiedToken.Uid;
-
-            var firebaseUser = await firebaseService.GetFirebaseUserById(uid);
-
-            Dictionary<string, object> claims = (Dictionary<string, object>)firebaseUser.CustomClaims;
-
-            bool isUser = claims.ContainsValue("user");
-
-            if (isUser)
-            {
-                AuthenticatedUserVM authenticatedUserVM = new AuthenticatedUserVM()
-                {
-                    UID = firebaseUser.Uid,
-                    Name = firebaseUser.DisplayName,
-                    Email = firebaseUser.Email,
-                    Profile = new Profile()
-                    { 
-                        UserUid = firebaseUser.Uid,
-                        PhotoUrl = null,
-                        Salary = 20000,
-                        SalaryCreationTime = DateTime.Now
-                    },
-                    Claims = firebaseUser.CustomClaims
-                };
-
-                return new JsonResult(authenticatedUserVM);
-            }
-
-            AuthenticatedAdminVM authenticatedAdminVM = new AuthenticatedAdminVM()
-            {
-                UID = firebaseUser.Uid,
-                Name = firebaseUser.DisplayName,
-                Email = firebaseUser.Email,
-                Claims = firebaseUser.CustomClaims
-            };
-
-            return new JsonResult(authenticatedAdminVM);
-        }
 
         [HttpPost]
-        [Route("register/user")]
-        public async Task<ActionResult<AuthenticatedUserVM>> RegisterUser([FromForm] string token)
+        [Route("signup-Email")]
+        public IActionResult SignUpEmail([FromForm] AuthenticateUserVM authenticateUser, int pageId)
         {
             try
             {
-                string role = "user";
-                GeneralUserVM generalUserVM = await authService.Register(token, role);
-
-                AuthenticatedUserVM authenticatedUserVM = new AuthenticatedUserVM()
+                string role = null;
+                string createdAccountWith = "password";
+                if (pageId == (int)PageTypes.RegisterSuperAdmin)
                 {
-                    UID = generalUserVM.UID,
-                    Name = generalUserVM.Name,
-                    Email = generalUserVM.Email,
-                    Profile = new Profile()
-                    {
-                        UserUid = generalUserVM.UID,
-                        PhotoUrl = null,
-                        Salary = 10000,
-                        SalaryCreationTime = null
-                    },
-                    Claims = generalUserVM.Claims
-                };
+                    role = "superadmin";
+                }
+                if (pageId == (int)PageTypes.RegisterAdmin)
+                {
+                    role = "admin";
+                }
+                if (pageId == (int)PageTypes.RegisterUser)
+                {
+                    role = "user";
+                }
 
-                return new JsonResult(authenticatedUserVM);
+                var authenticatedUser = authService.Register(authenticateUser, role, createdAccountWith);
+
+                var claims = authService.SetCustomClaims(authenticatedUser.ID, role);
+
+                var userDetails = authService.GetToken(authenticatedUser, claims);
+
+                return new JsonResult(userDetails);
             }
             catch (Exception e) { throw e; }
         }
 
         [HttpPost]
-        [Route("register/admin")]
-        //authorized only for the super admin
-        public async Task<ActionResult<AuthenticatedAdminVM>> RegisterAdmin([FromForm] string token)
+        [Route("signin-Email")]
+        public IActionResult SignInEmail([FromForm] AuthenticateUserVM authenticateUser)
         {
             try
             {
-                string role = "admin";
-                GeneralUserVM generalUserVM = await authService.Register(token, role);
+                var authenticatedUser = authService.Login(authenticateUser);
 
-                AuthenticatedAdminVM authenticatedAdminVM = new AuthenticatedAdminVM()
-                {
-                    UID = generalUserVM.UID,
-                    Name = generalUserVM.Name,
-                    Email = generalUserVM.Email,
-                    Claims = generalUserVM.Claims
-                };
+                if (authenticatedUser == null) throw new Exception("User is unauthorized or credential does not match");
 
-                return new JsonResult(authenticatedAdminVM);
+                string role = "me";
+
+                var claims = authService.SetCustomClaims(authenticatedUser.ID, role);
+
+                var userDetails = authService.GetToken(authenticatedUser, claims);
+
+                return new JsonResult(userDetails);
             }
             catch (Exception e) { throw e; }
         }
 
-        [HttpPost]
-        [Route("login/user")]
-        [Authorize(Roles = "user")]
-        public async Task<ActionResult<AuthenticatedUserVM>> LogInUser([FromForm] string token)
+        /*[HttpPost]
+        [Route("google")]
+        public async Task<ActionResult> Google([FromForm] string token, int pageId)
         {
             try
             {
-                GeneralUserVM generalUserVM = await authService.Login(token);
+                string role = null;
 
-                AuthenticatedUserVM authenticatedUserVM = new AuthenticatedUserVM()
+                if (pageId == (int)PageTypes.RegisterSuperAdmin)
                 {
-                    UID = generalUserVM.UID,
-                    Name = generalUserVM.Name,
-                    Email = generalUserVM.Email,
-                    Profile = new Profile()
-                    {
-                        UserUid = generalUserVM.UID,
-                        PhotoUrl = null,
-                        Salary = 10000,
-                        SalaryCreationTime = null
-                    },
-                    Claims = generalUserVM.Claims
-                };
+                    role = "superadmin";
+                }
+                if (pageId == (int)PageTypes.RegisterAdmin)
+                {
+                    role = "admin";
+                }
+                if (pageId == (int)PageTypes.RegisterUser)
+                {
+                    role = "user";
+                }
 
-                return new JsonResult(authenticatedUserVM);
+                *//*var authenticatedUser = await authService.Register(token, role);
+
+                return new JsonResult(authenticatedUser);*//*
             }
             catch (Exception e) { throw e; }
-        }
+        }*/
 
-        [HttpPost]
-        [Route("login/admin")]
-        [Authorize(Roles = "admin")]
-        public async Task<ActionResult<AuthenticatedAdminVM>> LogInAdmin([FromForm] string token)
-        {
-            try
-            {
-                GeneralUserVM generalUserVM = await authService.Login(token);
-
-                AuthenticatedAdminVM authenticatedAdminVM = new AuthenticatedAdminVM()
-                {
-                    UID = generalUserVM.UID,
-                    Name = generalUserVM.Name,
-                    Email = generalUserVM.Email,
-                    Claims = generalUserVM.Claims
-                };
-
-                return new JsonResult(authenticatedAdminVM);
-
-            }
-            catch (Exception e) { throw e; }
-        }
     }
 }

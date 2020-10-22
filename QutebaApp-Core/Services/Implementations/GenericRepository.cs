@@ -1,7 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Data;
+using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace QutebaApp_Core.Services.Implementations
 {
@@ -48,6 +51,12 @@ namespace QutebaApp_Core.Services.Implementations
                 table.Attach(obj);
             }
             table.Remove(obj);
+        }
+
+        public T GetByEmail(Expression<Func<T, bool>> email)
+        {
+            var query = table.Where(email).First();
+            return query;
         }
     }
 }

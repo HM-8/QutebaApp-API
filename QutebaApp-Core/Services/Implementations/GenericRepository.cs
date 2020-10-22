@@ -53,10 +53,11 @@ namespace QutebaApp_Core.Services.Implementations
             table.Remove(obj);
         }
 
-        public T GetByEmail(Expression<Func<T, bool>> email)
+        public T FindBy(Expression<Func<T, bool>> predicate)
         {
-            var query = table.Where(email).First();
+            var query = table.Where(predicate).First();
             return query;
         }
+
     }
 }

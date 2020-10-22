@@ -8,7 +8,7 @@ namespace QutebaApp_Core.Services.Interfaces
     {
         IEnumerable<T> GetAll();
         T GetById(object id);
-        T GetByEmail(Expression<Func<T, bool>> email);
+        T FindBy(Expression<Func<T, bool>> predicate);
         void Insert(T obj);
         void Update(T obj);
         void Delete(object id);

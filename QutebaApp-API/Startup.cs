@@ -51,13 +51,6 @@ namespace QutebaApp_API
                         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(Configuration["Authentication:Jwt:key"]))
                     };
                     jwtoptions.Validate();
-                })
-                .AddGoogle(googleOptions =>
-                {
-                    IConfigurationSection googleAuthNSection = Configuration.GetSection("Authentication:Google");
-
-                    googleOptions.ClientId = googleAuthNSection["ClientId"];
-                    googleOptions.ClientSecret = googleAuthNSection["ClientSecret"];
                 });
 
             services.AddAuthorization();

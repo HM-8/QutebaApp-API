@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.OtherModels;
 using QutebaApp_Data.ViewModels;
@@ -25,6 +26,7 @@ namespace QutebaApp_API.Controllers
             {
                 string role = null;
                 string createdAccountWith = "password";
+
                 if (pageId == (int)PageTypes.RegisterSuperAdmin)
                 {
                     role = "superadmin";
@@ -68,33 +70,50 @@ namespace QutebaApp_API.Controllers
             catch (Exception e) { throw e; }
         }
 
-        /*[HttpPost]
+        [HttpPost]
         [Route("google")]
-        public async Task<ActionResult> Google([FromForm] string token, int pageId)
+        public IActionResult Google([FromForm] string tokenId, int pageId)
         {
             try
             {
                 string role = null;
+                UserVM authenticatedUser = new UserVM();
+                string createdAccountWith = "google";
 
-                if (pageId == (int)PageTypes.RegisterSuperAdmin)
-                {
-                    role = "superadmin";
-                }
-                if (pageId == (int)PageTypes.RegisterAdmin)
-                {
-                    role = "admin";
-                }
-                if (pageId == (int)PageTypes.RegisterUser)
+                if (pageId == (int)PageTypes.RegisterUser || pageId == (int)PageTypes.LogInUser)
                 {
                     role = "user";
                 }
+                else { throw new Exception("Can't create account with Google."); }
 
-                *//*var authenticatedUser = await authService.Register(token, role);
 
-                return new JsonResult(authenticatedUser);*//*
+                var payload = GoogleJsonWebSignature.ValidateAsync(tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
+
+
+                AuthenticateUserVM authenticateUser = new AuthenticateUserVM()
+                {
+                    FullName = payload.Name,
+                    Email = payload.Email,
+                    Password = "nopassword"
+                };
+
+                bool doesUserExist = authService.DoesUserExist(authenticateUser.Email);
+
+                if (doesUserExist)
+                {
+                    authenticatedUser = authService.Login(authenticateUser);
+                }
+
+                authenticatedUser = authService.Register(authenticateUser, role, createdAccountWith);
+
+                var claims = authService.SetCustomClaims(authenticatedUser.ID, authenticatedUser.Role);
+
+                var userDetails = authService.GetToken(authenticatedUser, claims);
+
+                return new JsonResult(userDetails);
             }
             catch (Exception e) { throw e; }
-        }*/
+        }
 
     }
 }

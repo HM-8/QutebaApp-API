@@ -55,7 +55,7 @@ namespace QutebaApp_Core.Services.Implementations
 
         public T FindBy(Expression<Func<T, bool>> predicate)
         {
-            var query = table.Where(predicate).First();
+            var query = table.Where(predicate).FirstOrDefault();
             return query;
         }
 

@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -129,6 +130,18 @@ namespace QutebaApp_Core.Services.Implementations
             string encryptedPassword = Convert.ToBase64String(hashedPassword);
 
             return encryptedPassword;
+        }
+
+        public bool DoesUserExist(string email)
+        {
+            var user = unitOfWork.UserRepository.FindBy(u => u.Email == email);
+
+            if (user == null)
+            {
+                return false;
+            }
+
+            return true; 
         }
     }
 }

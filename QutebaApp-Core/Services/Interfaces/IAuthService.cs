@@ -11,5 +11,6 @@ namespace QutebaApp_Core.Services.Interfaces
         IEnumerable<Claim> SetCustomClaims(int id, string role);
         AuthenticatedUserVM GetToken(UserVM user, IEnumerable<Claim> claims);
         string Encrypt(string stringToEncrypt);
+        bool DoesUserExist(string email);
     }
 }

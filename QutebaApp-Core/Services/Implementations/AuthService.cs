@@ -7,7 +7,6 @@ using System;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -141,7 +140,7 @@ namespace QutebaApp_Core.Services.Implementations
                 return false;
             }
 
-            return true; 
+            return true;
         }
     }
 }

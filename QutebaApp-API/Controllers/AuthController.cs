@@ -21,6 +21,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("signup-Email")]
+        [AllowAnonymous]
         public IActionResult SignUpEmail([FromBody] AuthenticateUserVM authenticateUser, int pageId)
         {
             try
@@ -54,6 +55,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("signin-Email")]
+        [AllowAnonymous]
         public IActionResult SignInEmail([FromBody] AuthenticateUserVM authenticateUser)
         {
             try
@@ -73,6 +75,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("google")]
+        [AllowAnonymous]
         public IActionResult Google([FromForm] string tokenId)
         {
             try

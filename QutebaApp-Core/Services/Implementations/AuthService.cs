@@ -24,7 +24,7 @@ namespace QutebaApp_Core.Services.Implementations
             this.configuration = configuration;
         }
 
-        public UserVM Register(AuthenticateUserVM authenticateUser, string role, string createdAccountWith)
+        public UserVM Register(SignUpUserVM authenticateUser, string role, string createdAccountWith)
         {
             try
             {
@@ -62,7 +62,7 @@ namespace QutebaApp_Core.Services.Implementations
             catch (Exception e) { throw e; }
         }
 
-        public UserVM Login(AuthenticateUserVM authenticateUser)
+        public UserVM Login(SignInUserVM authenticateUser)
         {
             try
             {

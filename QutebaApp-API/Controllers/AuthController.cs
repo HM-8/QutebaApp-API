@@ -1,4 +1,5 @@
 ﻿using Google.Apis.Auth;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.OtherModels;
@@ -72,20 +73,13 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("google")]
-        public IActionResult Google([FromForm] string tokenId, int pageId)
+        public IActionResult Google([FromForm] string tokenId)
         {
             try
             {
-                string role = null;
-                UserVM authenticatedUser = new UserVM();
+                string role = "user";
                 string createdAccountWith = "google";
-
-                if (pageId == (int)PageTypes.RegisterUser || pageId == (int)PageTypes.LogInUser)
-                {
-                    role = "user";
-                }
-                else { throw new Exception("Can't create account with Google."); }
-
+                UserVM authenticatedUser = new UserVM();
 
                 var payload = GoogleJsonWebSignature.ValidateAsync(tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
 

@@ -22,7 +22,7 @@ namespace QutebaApp_API.Controllers
         [HttpPost]
         [Route("signup-Email")]
         [AllowAnonymous]
-        public IActionResult SignUpEmail([FromBody] AuthenticateUserVM authenticateUser, int pageId)
+        public IActionResult SignUpEmail([FromBody] SignUpUserVM authenticateUser, [FromQuery] int pageId)
         {
             try
             {
@@ -56,7 +56,7 @@ namespace QutebaApp_API.Controllers
         [HttpPost]
         [Route("signin-Email")]
         [AllowAnonymous]
-        public IActionResult SignInEmail([FromBody] AuthenticateUserVM authenticateUser)
+        public IActionResult SignInEmail([FromBody] SignInUserVM authenticateUser)
         {
             try
             {
@@ -76,7 +76,7 @@ namespace QutebaApp_API.Controllers
         [HttpPost]
         [Route("google")]
         [AllowAnonymous]
-        public IActionResult Google([FromForm] string tokenId)
+        public IActionResult Google([FromQuery] string tokenId)
         {
             try
             {
@@ -86,22 +86,29 @@ namespace QutebaApp_API.Controllers
 
                 var payload = GoogleJsonWebSignature.ValidateAsync(tokenId, new GoogleJsonWebSignature.ValidationSettings()).Result;
 
-
-                AuthenticateUserVM authenticateUser = new AuthenticateUserVM()
-                {
-                    FullName = payload.Name,
-                    Email = payload.Email,
-                    Password = "nopassword"
-                };
-
-                bool doesUserExist = authService.DoesUserExist(authenticateUser.Email);
+                bool doesUserExist = authService.DoesUserExist(payload.Email);
 
                 if (doesUserExist)
                 {
-                    authenticatedUser = authService.Login(authenticateUser);
-                }
+                    SignInUserVM signInUser = new SignInUserVM()
+                    {
+                        Email = payload.Email,
+                        Password = "nopassword"
+                    };
 
-                authenticatedUser = authService.Register(authenticateUser, role, createdAccountWith);
+                    authenticatedUser = authService.Login(signInUser);
+                }
+                else
+                {
+                    SignUpUserVM signUpUser = new SignUpUserVM()
+                    {
+                        FullName = payload.Name,
+                        Email = payload.Email,
+                        Password = "nopassword"
+                    };
+
+                    authenticatedUser = authService.Register(signUpUser, role, createdAccountWith);
+                }
 
                 var claims = authService.SetCustomClaims(authenticatedUser.ID, authenticatedUser.Role);
 

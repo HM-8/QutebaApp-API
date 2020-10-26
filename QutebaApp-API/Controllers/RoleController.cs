@@ -8,6 +8,7 @@ using System.Collections.Generic;
 namespace QutebaApp_API.Controllers
 {
     [Route("api/roles")]
+    [ApiController]
     public class RoleController : Controller
     {
         private readonly IUnitOfWork unitOfWork;
@@ -75,20 +76,31 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("addrole")]
-        public IActionResult AddRole(string roleName)
+        public IActionResult AddRole(IEnumerable<string> roleNames)
         {
             try
             {
-                Role role = new Role()
+                int count = 0;
+                foreach (var roleName in roleNames)
                 {
-                    RoleName = roleName,
-                    RoleCreationTime = DateTime.Now
-                };
+                    Role role = new Role()
+                    {
+                        RoleName = roleName,
+                        RoleCreationTime = DateTime.Now
+                    };
 
-                unitOfWork.RoleRepository.Insert(role);
-                unitOfWork.Save();
+                    unitOfWork.RoleRepository.Insert(role);
+                    unitOfWork.Save();
 
-                return new JsonResult($"Role {roleName} has been added! Created at {role.RoleCreationTime}");
+                    count++;
+                }
+
+                if (count > 1)
+                {
+                    return new JsonResult($"The specified roles have been added! Created at {DateTime.Now}");
+                }
+
+                return new JsonResult($"Role {roleNames} has been added! Created at {DateTime.Now}");
             }
             catch (Exception e) { throw e; }
         }

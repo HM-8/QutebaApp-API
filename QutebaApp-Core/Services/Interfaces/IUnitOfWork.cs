@@ -11,6 +11,7 @@ namespace QutebaApp_Core.Services.Interfaces
         GenericRepository<Role> RoleRepository { get; }
         GenericRepository<Category> CategoryRepository { get; }
         GenericRepository<Spending> SpendingRepository { get; }
+        GenericRepository<Income> IncomeRepository { get; }
 
         void Save();
     }

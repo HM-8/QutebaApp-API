@@ -14,6 +14,7 @@ namespace QutebaApp_Core.Services.Implementations
         GenericRepository<Role> roleRepository;
         GenericRepository<Category> categoryRepository;
         GenericRepository<Spending> spendingRepository;
+        GenericRepository<Income> incomeRepository;
 
         public UnitOfWork(QutebaAppDbContext context)
         {
@@ -77,6 +78,18 @@ namespace QutebaApp_Core.Services.Implementations
                     this.spendingRepository = new GenericRepository<Spending>(context);
                 }
                 return spendingRepository;
+            }
+        }
+
+        public GenericRepository<Income> IncomeRepository
+        {
+            get
+            {
+                if (this.incomeRepository == null)
+                {
+                    this.incomeRepository = new GenericRepository<Income>(context);
+                }
+                return incomeRepository;
             }
         }
 

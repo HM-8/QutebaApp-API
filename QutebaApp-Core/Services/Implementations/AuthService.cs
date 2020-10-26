@@ -86,13 +86,13 @@ namespace QutebaApp_Core.Services.Implementations
         public IEnumerable<Claim> SetCustomClaims(int id, string role)
         {
             var user = unitOfWork.UserRepository.GetById(id);
-
+            string userId = "userId";
             var claims = new List<Claim>
                {
+                  new Claim(userId, user.Id.ToString()),
                   new Claim(ClaimTypes.Name, user.Fullname),
                   new Claim(ClaimTypes.Email, user.Email),
                   new Claim(ClaimTypes.Role, role)
-
                };
 
             return claims;

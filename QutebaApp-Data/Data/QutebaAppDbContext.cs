@@ -1,6 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
+﻿using Microsoft.EntityFrameworkCore;
 using QutebaApp_Data.Models;
 
 namespace QutebaApp_Data.Data
@@ -44,7 +42,7 @@ namespace QutebaApp_Data.Data
                     .IsRequired()
                     .HasColumnName("category_type")
                     .HasMaxLength(45);
-                   
+
                 entity.Property(e => e.UserId).HasColumnName("user_cID");
 
                 entity.Property(e => e.CategoryCreationTime)

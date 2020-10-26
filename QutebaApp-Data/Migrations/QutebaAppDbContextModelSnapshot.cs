@@ -34,33 +34,72 @@ namespace QutebaApp_Data.Migrations
                         .HasColumnType("varchar(45)")
                         .HasMaxLength(45);
 
+                    b.Property<string>("CategoryType")
+                        .IsRequired()
+                        .HasColumnName("category_type")
+                        .HasColumnType("varchar(45)")
+                        .HasMaxLength(45);
+
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_cID")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryName")
-                        .IsUnique()
-                        .HasName("name_UNIQUE");
+                    b.HasIndex("UserId")
+                        .HasName("user_ID_idx");
 
                     b.ToTable("categories");
                 });
 
-            modelBuilder.Entity("QutebaApp_Data.Models.Profile", b =>
+            modelBuilder.Entity("QutebaApp_Data.Models.Income", b =>
                 {
-                    b.Property<int>("UserId")
-                        .HasColumnName("user_ID")
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnName("ID")
                         .HasColumnType("int");
 
-                    b.Property<double?>("Income")
-                        .HasColumnName("income")
+                    b.Property<double>("IncomeAmount")
+                        .HasColumnName("income_amount")
                         .HasColumnType("double");
+
+                    b.Property<int>("IncomeCategoryId")
+                        .HasColumnName("income_category_ID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("IncomeCreationTime")
                         .HasColumnName("income_creation_time")
                         .HasColumnType("datetime");
 
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_iID")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IncomeCategoryId")
+                        .HasName("category_iid_idx");
+
+                    b.HasIndex("UserId")
+                        .HasName("user_iid_idx");
+
+                    b.ToTable("incomes");
+                });
+
+            modelBuilder.Entity("QutebaApp_Data.Models.Profile", b =>
+                {
+                    b.Property<int>("UserId")
+                        .HasColumnName("user_pID")
+                        .HasColumnType("int");
+
                     b.Property<string>("PhotoUrl")
                         .HasColumnName("photo_url")
                         .HasColumnType("varchar(255)")
                         .HasMaxLength(255);
+
+                    b.Property<DateTime>("ProfileCreationTime")
+                        .HasColumnName("profile_creation_time")
+                        .HasColumnType("datetime");
 
                     b.Property<string>("Username")
                         .IsRequired()
@@ -115,29 +154,29 @@ namespace QutebaApp_Data.Migrations
                         .HasColumnName("ID")
                         .HasColumnType("int");
 
-                    b.Property<double>("Amount")
-                        .HasColumnName("amount")
-                        .HasColumnType("double");
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnName("category_ID")
-                        .HasColumnType("int");
-
                     b.Property<string>("Reason")
                         .HasColumnName("reason")
                         .HasColumnType("text");
+
+                    b.Property<double>("SpendingAmount")
+                        .HasColumnName("spending_amount")
+                        .HasColumnType("double");
+
+                    b.Property<int>("SpendingCategoryId")
+                        .HasColumnName("spending_category_ID")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("SpendingCreationTime")
                         .HasColumnName("spending_creation_time")
                         .HasColumnType("datetime");
 
                     b.Property<int>("UserId")
-                        .HasColumnName("user_ID")
+                        .HasColumnName("user_sID")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId")
+                    b.HasIndex("SpendingCategoryId")
                         .HasName("category_ID_idx");
 
                     b.HasIndex("UserId")
@@ -178,7 +217,7 @@ namespace QutebaApp_Data.Migrations
                         .HasMaxLength(45);
 
                     b.Property<int>("RoleId")
-                        .HasColumnName("role_ID")
+                        .HasColumnName("role_uID")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("UserCreationTime")
@@ -197,27 +236,51 @@ namespace QutebaApp_Data.Migrations
                     b.ToTable("users");
                 });
 
+            modelBuilder.Entity("QutebaApp_Data.Models.Category", b =>
+                {
+                    b.HasOne("QutebaApp_Data.Models.Profile", "User")
+                        .WithMany("Categories")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("user_id")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("QutebaApp_Data.Models.Income", b =>
+                {
+                    b.HasOne("QutebaApp_Data.Models.Category", "IncomeCategory")
+                        .WithMany("Incomes")
+                        .HasForeignKey("IncomeCategoryId")
+                        .HasConstraintName("category_iid")
+                        .IsRequired();
+
+                    b.HasOne("QutebaApp_Data.Models.Profile", "User")
+                        .WithMany("Incomes")
+                        .HasForeignKey("UserId")
+                        .HasConstraintName("user_iid")
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("QutebaApp_Data.Models.Profile", b =>
                 {
                     b.HasOne("QutebaApp_Data.Models.User", "User")
                         .WithOne("Profiles")
                         .HasForeignKey("QutebaApp_Data.Models.Profile", "UserId")
-                        .HasConstraintName("user_id")
+                        .HasConstraintName("user_pid")
                         .IsRequired();
                 });
 
             modelBuilder.Entity("QutebaApp_Data.Models.Spending", b =>
                 {
-                    b.HasOne("QutebaApp_Data.Models.Category", "Category")
+                    b.HasOne("QutebaApp_Data.Models.Category", "SpendingCategory")
                         .WithMany("Spendings")
-                        .HasForeignKey("CategoryId")
-                        .HasConstraintName("category_ID")
+                        .HasForeignKey("SpendingCategoryId")
+                        .HasConstraintName("category_sid")
                         .IsRequired();
 
                     b.HasOne("QutebaApp_Data.Models.Profile", "User")
                         .WithMany("Spendings")
                         .HasForeignKey("UserId")
-                        .HasConstraintName("user_s_id")
+                        .HasConstraintName("user_sid")
                         .IsRequired();
                 });
 
@@ -226,7 +289,7 @@ namespace QutebaApp_Data.Migrations
                     b.HasOne("QutebaApp_Data.Models.Role", "Role")
                         .WithMany("Users")
                         .HasForeignKey("RoleId")
-                        .HasConstraintName("role_ID")
+                        .HasConstraintName("role_uid")
                         .IsRequired();
                 });
 #pragma warning restore 612, 618

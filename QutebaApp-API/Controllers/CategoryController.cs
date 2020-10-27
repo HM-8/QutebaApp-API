@@ -31,7 +31,7 @@ namespace QutebaApp_API.Controllers
             {
                 categoryType = "income";
             }
-            if (pageId == (int)PageTypes.RegisterAdmin)
+            if (pageId == (int)PageTypes.AddSpendingCategory)
             {
                 categoryType = "spending";
             }

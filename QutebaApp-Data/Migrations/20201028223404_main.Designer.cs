@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QutebaApp_Data.Data;
 
 namespace QutebaApp_Data.Migrations
 {
     [DbContext(typeof(QutebaAppDbContext))]
-    partial class QutebaAppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20201028223404_main")]
+    partial class main
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

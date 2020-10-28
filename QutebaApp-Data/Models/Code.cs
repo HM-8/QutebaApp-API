@@ -8,6 +8,7 @@ namespace QutebaApp_Data.Models
     {
         public int UserId { get; set; }
         public int CodeDigit { get; set; }
+        public DateTime TimeCreated { get; set; }
 
         public virtual User User { get; set; }
     }

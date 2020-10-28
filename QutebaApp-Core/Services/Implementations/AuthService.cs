@@ -142,5 +142,13 @@ namespace QutebaApp_Core.Services.Implementations
 
             return true;
         }
+
+        public int GenerateCode()
+        {
+            Random random = new Random();
+            var code = random.Next(100000, 999999);
+
+            return code;
+        }
     }
 }

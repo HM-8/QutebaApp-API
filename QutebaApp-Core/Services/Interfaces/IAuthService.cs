@@ -12,5 +12,6 @@ namespace QutebaApp_Core.Services.Interfaces
         AuthenticatedUserVM GetToken(UserVM user, IEnumerable<Claim> claims);
         string Encrypt(string stringToEncrypt);
         bool DoesUserExist(string email);
+        int GenerateCode();
     }
 }

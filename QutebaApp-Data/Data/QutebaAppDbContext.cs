@@ -122,10 +122,33 @@ namespace QutebaApp_Data.Data
                     .HasColumnName("profile_creation_time");
 
                 entity.HasOne(d => d.User)
-                    .WithOne(p => p.Profiles)
+                    .WithOne(p => p.Profile)
                     .HasForeignKey<Profile>(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("user_pid");
+            });
+
+            modelBuilder.Entity<Code>(entity =>
+            {
+                entity.HasKey(e => e.UserId)
+                    .HasName("PRIMARY");
+
+                entity.ToTable("codes");
+
+                entity.HasIndex(e => e.UserId)
+                    .HasName("user_ID_UNIQUE")
+                    .IsUnique();
+
+                entity.Property(e => e.UserId).HasColumnName("user_cID");
+
+                entity.Property(e => e.CodeDigit)
+                    .HasColumnName("code_digit");
+
+                entity.HasOne(d => d.User)
+                    .WithOne(c => c.Code)
+                    .HasForeignKey<Code>(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("user_cid");
             });
 
             modelBuilder.Entity<Role>(entity =>

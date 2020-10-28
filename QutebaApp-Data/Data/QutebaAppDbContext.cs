@@ -141,8 +141,9 @@ namespace QutebaApp_Data.Data
 
                 entity.Property(e => e.UserId).HasColumnName("user_cID");
 
-                entity.Property(e => e.CodeDigit)
-                    .HasColumnName("code_digit");
+                entity.Property(e => e.CodeDigit).HasColumnName("code_digit");
+
+                entity.Property(e => e.TimeCreated).HasColumnName("code_creation_time");
 
                 entity.HasOne(d => d.User)
                     .WithOne(c => c.Code)

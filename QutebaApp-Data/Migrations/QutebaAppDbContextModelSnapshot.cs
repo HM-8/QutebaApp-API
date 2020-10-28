@@ -62,6 +62,10 @@ namespace QutebaApp_Data.Migrations
                         .HasColumnName("code_digit")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("TimeCreated")
+                        .HasColumnName("code_creation_time")
+                        .HasColumnType("datetime");
+
                     b.HasKey("UserId")
                         .HasName("PRIMARY");
 

@@ -13,9 +13,13 @@ namespace QutebaApp_API.Controllers
     public class AuthController : Controller
     {
         private readonly IAuthService authService;
-        public AuthController(IAuthService authService)
+        private readonly IEmailSenderService emailSenderService;
+        private readonly IUnitOfWork unitOfWork;
+        public AuthController(IAuthService authService, IUnitOfWork unitOfWork, IEmailSenderService emailSenderService)
         {
             this.authService = authService;
+            this.unitOfWork = unitOfWork;
+            this.emailSenderService = emailSenderService;
         }
 
 
@@ -117,6 +121,38 @@ namespace QutebaApp_API.Controllers
                 return new JsonResult(userDetails);
             }
             catch (Exception e) { throw e; }
+        }
+
+        [HttpPost]
+        [Route("password/sendpasswordresetcode")]
+        public IActionResult SendPasswordResetCode([FromBody] ForgotPasswordVM forgotPasswordVM)
+        {
+            var user = unitOfWork.UserRepository.FindBy(u => u.Email == forgotPasswordVM.Email);
+
+            if (user != null)
+            {
+                string username = user.Fullname.Split(" ")[0];
+                var code = authService.GenerateCode();
+
+                DynamicTemplateDataVM templateDataVM = new DynamicTemplateDataVM()
+                {
+                    Name = username,
+                    Email = user.Email,
+                    Code = code.ToString()
+                };
+
+                var response = emailSenderService.SendForgotPasswordEmailAsync(templateDataVM);
+
+                if (response.Result == true)
+                {
+                    return new JsonResult($"Code has been sent to {user.Email}.");
+                }
+
+                return new JsonResult($"Error: Code has not been sent to {user.Email}.");
+            }
+
+            return new JsonResult($"Error: User does not exist!");
+
         }
 
     }

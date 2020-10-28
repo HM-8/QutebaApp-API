@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace QutebaApp_Data.ViewModels
+﻿namespace QutebaApp_Data.ViewModels
 {
     public class CreateIncomeVM
     {

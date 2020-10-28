@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
+using System;
 
 namespace QutebaApp_API.Controllers
 {

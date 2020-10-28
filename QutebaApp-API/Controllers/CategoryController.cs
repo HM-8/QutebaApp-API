@@ -5,7 +5,6 @@ using QutebaApp_Data.Models;
 using QutebaApp_Data.OtherModels;
 using QutebaApp_Data.ViewModels;
 using System;
-using System.Collections.Generic;
 
 namespace QutebaApp_API.Controllers
 {

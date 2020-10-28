@@ -13,6 +13,7 @@ namespace QutebaApp_Data.Models
         public DateTime UserCreationTime { get; set; }
 
         public virtual Role Role { get; set; }
-        public virtual Profile Profiles { get; set; }
+        public virtual Profile Profile { get; set; }
+        public virtual Code Code { get; set; }
     }
 }

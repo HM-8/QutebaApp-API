@@ -118,7 +118,6 @@ namespace QutebaApp_Core.Services.Implementations
                 ID = user.ID,
                 FullName = user.FullName,
                 Email = user.Email,
-                Claims = token.Claims
             };
         }
 

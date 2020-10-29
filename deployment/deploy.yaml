@@ -1,0 +1,34 @@
+kind: Deployment
+apiVersion: extensions/v1beta1
+metadata:
+  name: ticketpack-api
+spec:
+  selector:
+    matchLabels:
+      app: dotnet
+      role: backend
+  replicas: 1
+  template:
+    metadata:
+      name: ticketpack-api-deployment
+      labels:
+        app: dotnet
+        role: backend
+        env: develop
+    spec:
+      containers:
+      - name: ticketpack-api
+        image: gcr.io/gcr-project/sample:1.0.0
+        env:
+        resources:
+          limits:
+            memory: "500Mi"
+            cpu: "100m"
+        imagePullPolicy: Always
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8000
+        ports:
+        - name: tpack-api-port
+          containerPort: 8000

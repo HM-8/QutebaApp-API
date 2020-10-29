@@ -59,5 +59,11 @@ namespace QutebaApp_Core.Services.Implementations
             return query;
         }
 
+        public void DetachEntry(T obj)
+        {
+            context.Entry(obj).State = EntityState.Detached;
+            Console.WriteLine($"State >>>> {context.Entry(obj)} {context.Entry(obj).State}");
+        }
+
     }
 }

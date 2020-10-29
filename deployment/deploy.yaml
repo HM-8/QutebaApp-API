@@ -1,7 +1,7 @@
 kind: Deployment
 apiVersion: extensions/v1beta1
 metadata:
-  name: ticketpack-api
+  name: qutebapp-api
 spec:
   selector:
     matchLabels:
@@ -10,14 +10,14 @@ spec:
   replicas: 1
   template:
     metadata:
-      name: ticketpack-api-deployment
+      name: qutebapp-api-deployment
       labels:
         app: dotnet
         role: backend
         env: develop
     spec:
       containers:
-      - name: ticketpack-api
+      - name: qutebapp-api
         image: gcr.io/gcr-project/sample:1.0.0
         env:
         resources:

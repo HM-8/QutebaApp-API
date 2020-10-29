@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using QutebaApp_Core.Services.Interfaces;
+using QutebaApp_Data.Models;
 using QutebaApp_Data.OtherModels;
 using QutebaApp_Data.ViewModels;
 using System;
@@ -145,6 +146,9 @@ namespace QutebaApp_API.Controllers
 
                 if (response.Result == true)
                 {
+                    unitOfWork.CodeRepository.Insert(new Code() { UserId = user.Id, CodeDigit = code, TimeCreated = DateTime.Now });
+                    unitOfWork.Save();
+
                     return new JsonResult($"Code has been sent to {user.Email}.");
                 }
 
@@ -153,6 +157,48 @@ namespace QutebaApp_API.Controllers
 
             return new JsonResult($"Error: User does not exist!");
 
+        }
+
+        [HttpPatch]
+        [Route("password/resetforgottenpassword")]
+        public IActionResult ResetForgottenPassword([FromBody] ResetPasswordCodeVM resetPasswordCodeVM)
+        {
+            var user = unitOfWork.UserRepository.FindBy(u => u.Email == resetPasswordCodeVM.Email);
+            unitOfWork.UserRepository.DetachEntry(user);
+
+            if (user != null)
+            {
+                var code = unitOfWork.CodeRepository.FindBy(u => u.UserId == user.Id && u.CodeDigit == Convert.ToInt32(resetPasswordCodeVM.Code));
+                unitOfWork.CodeRepository.DetachEntry(code);
+
+                if (code != null)
+                {
+                    resetPasswordCodeVM.NewPasssword = authService.Encrypt(resetPasswordCodeVM.NewPasssword);
+
+                    User updateUser = new User()
+                    {
+                        Id = user.Id,
+                        Email = user.Email,
+                        Password = resetPasswordCodeVM.NewPasssword,
+                        Fullname = user.Fullname,
+                        RoleId = user.RoleId,
+                        CreatedAccountWith = user.CreatedAccountWith,
+                        UserCreationTime = user.UserCreationTime
+                    };
+
+                    unitOfWork.UserRepository.Update(updateUser);
+
+                    unitOfWork.CodeRepository.Delete(code.ID);
+
+                    unitOfWork.Save();
+
+                    return new JsonResult($"You password is now updated!!");
+                }
+
+                return new JsonResult($"Error: Incorrect code!");
+            }
+
+            return new JsonResult($"Error: User does not exist!");
         }
 
     }

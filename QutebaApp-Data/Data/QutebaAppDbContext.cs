@@ -130,7 +130,7 @@ namespace QutebaApp_Data.Data
 
             modelBuilder.Entity<Code>(entity =>
             {
-                entity.HasKey(e => e.UserId)
+                entity.HasKey(e => e.ID)
                     .HasName("PRIMARY");
 
                 entity.ToTable("codes");
@@ -138,6 +138,8 @@ namespace QutebaApp_Data.Data
                 entity.HasIndex(e => e.UserId)
                     .HasName("user_ID_UNIQUE")
                     .IsUnique();
+
+                entity.Property(e => e.ID).HasColumnName("ID");
 
                 entity.Property(e => e.UserId).HasColumnName("user_cID");
 

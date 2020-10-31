@@ -26,11 +26,11 @@ namespace QutebaApp_API.Controllers
         {
             string categoryType = null;
 
-            if (pageId == (int)PageTypes.AddIncomeCategory)
+            if (pageId == (int)PageTypes.IncomeCategory)
             {
                 categoryType = "income";
             }
-            if (pageId == (int)PageTypes.AddSpendingCategory)
+            if (pageId == (int)PageTypes.SpendingCategory)
             {
                 categoryType = "spending";
             }
@@ -49,9 +49,11 @@ namespace QutebaApp_API.Controllers
 
                 unitOfWork.CategoryRepository.Insert(category);
                 unitOfWork.Save();
+
+                return new JsonResult($"Category {categoryVM.CategoryName} has been added! Created at {DateTime.Now}");
             }
 
-            return new JsonResult($"Category {categoryVM.CategoryName} has been added! Created at {DateTime.Now}");
+            return new JsonResult($"Error: You don't have a profile.");
         }
     }
 }

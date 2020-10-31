@@ -19,6 +19,23 @@ namespace QutebaApp_API.Controllers
             this.unitOfWork = unitOfWork;
         }
 
+        [HttpGet]
+        [Route("getallcategories")]
+        [Authorize(Roles = "user")]
+        public IActionResult GetAllCategories()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var categories = unitOfWork.CategoryRepository.FindAllBy(c => c.UserId == userId);
+
+            if (categories != null)
+            {
+                return new JsonResult(categories);
+            }
+
+            return new JsonResult("You currently have no categories!");
+        }
+
         [HttpPost]
         [Route("addcategory")]
         [Authorize(Roles = "user")]

@@ -5,6 +5,7 @@
     <RootNamespace>QutebaApp_API</RootNamespace>
     <UserSecretsId>2e3f485a-1f0b-451a-beea-79738c7bd0e6</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+    <DockerfileFile>..\Dockerfile</DockerfileFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Google.Apis.Auth" Version="1.49.0" />

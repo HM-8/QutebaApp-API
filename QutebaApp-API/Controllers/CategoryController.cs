@@ -5,6 +5,8 @@ using QutebaApp_Data.Models;
 using QutebaApp_Data.OtherModels;
 using QutebaApp_Data.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QutebaApp_API.Controllers
 {
@@ -71,6 +73,61 @@ namespace QutebaApp_API.Controllers
             }
 
             return new JsonResult($"Error: You don't have a profile.");
+        }
+
+        [HttpGet]
+        [Route("categorieswithcount")]
+        [Authorize(Roles = "user")]
+        public IActionResult CategoriesWithCount([FromQuery] int pageId)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+            string categoryType = null;
+
+            if (pageId == (int)PageTypes.IncomeCategory)
+            {
+                categoryType = "income";
+
+                var categories = unitOfWork.CategoryRepository.FindAllBy(c => c.UserId == userId && c.CategoryType == categoryType, "Incomes");
+
+                List<CategoryWithCountVM> categoriesWithCount = new List<CategoryWithCountVM>();
+
+                foreach (var category in categories)
+                {
+                    CategoryWithCountVM categoryWithCount = new CategoryWithCountVM()
+                    {
+                        CategoryName = category.CategoryName,
+                        Count = category.Incomes.Count()
+                    };
+
+                    categoriesWithCount.Add(categoryWithCount);
+                }
+
+                return new JsonResult(categoriesWithCount);
+            }
+
+            if (pageId == (int)PageTypes.SpendingCategory)
+            {
+                categoryType = "spending";
+
+                var categories = unitOfWork.CategoryRepository.FindAllBy(c => c.UserId == userId && c.CategoryType == categoryType, "Spendings");
+
+                List<CategoryWithCountVM> categoriesWithCount = new List<CategoryWithCountVM>();
+
+                foreach (var category in categories)
+                {
+                    CategoryWithCountVM categoryWithCount = new CategoryWithCountVM()
+                    {
+                        CategoryName = category.CategoryName,
+                        Count = category.Spendings.Count()
+                    };
+
+                    categoriesWithCount.Add(categoryWithCount);
+                }
+
+                return new JsonResult(categoriesWithCount);
+            }
+
+            return new JsonResult("Error: Wrong pageId!");
         }
     }
 }

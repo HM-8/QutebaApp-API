@@ -201,5 +201,30 @@ namespace QutebaApp_API.Controllers
             return new JsonResult($"Error: User does not exist!");
         }
 
+        [HttpPatch]
+        [Route("password/changepassword")]
+        [Authorize(Roles = "user")]
+        public IActionResult ChangePassword([FromBody] string newPassword)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var user = unitOfWork.UserRepository.GetById(userId);
+            unitOfWork.UserRepository.DetachEntry(user);
+
+            User newUser = new User()
+            {
+                Id = user.Id,
+                Email = user.Email,
+                Password = authService.Encrypt(newPassword),
+                Fullname = user.Fullname,
+                RoleId = user.RoleId,
+                CreatedAccountWith = user.CreatedAccountWith
+            };
+
+            unitOfWork.UserRepository.Update(newUser);
+            unitOfWork.Save();
+
+            return new JsonResult("Your password has now been changed!");
+        }
     }
 }

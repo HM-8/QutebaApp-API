@@ -27,7 +27,7 @@ spec:
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
-            path: /api
+            path: /api/users/v1
             port: 60917
         ports:
         - name: qapp-api-port

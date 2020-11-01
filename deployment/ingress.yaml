@@ -11,5 +11,5 @@ spec:
       paths:
       - backend:
           serviceName: qutebapp-api-service
-          servicePort: 60917
+          servicePort: 80
         path: /

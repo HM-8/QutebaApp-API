@@ -18,6 +18,13 @@ namespace QutebaApp_API.Controllers
         }
 
         [HttpGet]
+        [Route("v1")]
+        public IActionResult Test()
+        {
+            return Ok();
+        }
+
+        [HttpGet]
         [Route("gettotalbalance")]
         [Authorize(Roles = "user")]
         public IActionResult GetTotalBalance()

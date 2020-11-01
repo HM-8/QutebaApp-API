@@ -126,6 +126,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPost]
         [Route("password/sendpasswordresetcode")]
+        [AllowAnonymous]
         public IActionResult SendPasswordResetCode([FromBody] ForgotPasswordVM forgotPasswordVM)
         {
             var user = unitOfWork.UserRepository.FindBy(u => u.Email == forgotPasswordVM.Email);
@@ -161,6 +162,7 @@ namespace QutebaApp_API.Controllers
 
         [HttpPatch]
         [Route("password/resetforgottenpassword")]
+        [AllowAnonymous]
         public IActionResult ResetForgottenPassword([FromBody] ResetPasswordCodeVM resetPasswordCodeVM)
         {
             var user = unitOfWork.UserRepository.FindBy(u => u.Email == resetPasswordCodeVM.Email);

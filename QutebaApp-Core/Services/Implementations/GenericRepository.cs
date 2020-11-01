@@ -59,6 +59,26 @@ namespace QutebaApp_Core.Services.Implementations
             return query;
         }
 
+        public IEnumerable<T> FindAllBy(Expression<Func<T, bool>> predicate)
+        {
+            var query = table.Where(predicate).ToList();
+            return query;
+        }
+
+        public IEnumerable<T> FindAllBy(Expression<Func<T, bool>> predicate, params string[] includes)
+        {
+            var query = table.Where(predicate).AsQueryable();
+
+            foreach (var item in includes)
+            {
+                query = query.Include(item);
+            }
+
+            query.ToList();
+
+            return query;
+        }
+
         public void DetachEntry(T obj)
         {
             context.Entry(obj).State = EntityState.Detached;

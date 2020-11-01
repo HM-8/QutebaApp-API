@@ -4,6 +4,8 @@ using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QutebaApp_API.Controllers
 {
@@ -45,6 +47,37 @@ namespace QutebaApp_API.Controllers
             }
 
             return new JsonResult($"Error: spending cannot be added because the category type is wrong!");
+        }
+
+        [HttpGet]
+        [Route("getallspending")]
+        [Authorize(Roles = "user")]
+        public IActionResult GetAllSpending()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var spendings = unitOfWork.SpendingRepository.FindAllBy(i => i.UserId == userId, "SpendingCategory");
+
+            if (spendings.FirstOrDefault() != null)
+            {
+                List<SpendingDashboardVM> spendingsDashboardVM = new List<SpendingDashboardVM>();
+
+                foreach (var spending in spendings)
+                {
+                    SpendingDashboardVM spendingDashboardVM = new SpendingDashboardVM()
+                    {
+                        SpendingCategoryName = spending.SpendingCategory.CategoryName,
+                        SpendingCreationTime = spending.SpendingCreationTime,
+                        SpendingAmount = spending.SpendingAmount
+                    };
+
+                    spendingsDashboardVM.Add(spendingDashboardVM);
+                }
+
+                return new JsonResult(spendingsDashboardVM);
+            }
+
+            return new JsonResult("You currently have no spendings!");
         }
     }
 }

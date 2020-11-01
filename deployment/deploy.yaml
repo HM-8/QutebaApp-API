@@ -28,7 +28,7 @@ spec:
         readinessProbe:
           httpGet:
             path: /api/user/v1
-            port: 60917
+            port: 80
         ports:
         - name: qapp-api-port
-          containerPort: 60917
+          containerPort: 80

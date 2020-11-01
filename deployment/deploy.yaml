@@ -27,8 +27,8 @@ spec:
         imagePullPolicy: Always
         readinessProbe:
           httpGet:
-            path: /
-            port: 8000
+            path: /api
+            port: 60917
         ports:
-        - name: tpack-api-port
-          containerPort: 8000
+        - name: qapp-api-port
+          containerPort: 60917

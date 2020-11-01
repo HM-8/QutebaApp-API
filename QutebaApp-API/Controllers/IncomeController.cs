@@ -4,6 +4,8 @@ using QutebaApp_Core.Services.Interfaces;
 using QutebaApp_Data.Models;
 using QutebaApp_Data.ViewModels;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace QutebaApp_API.Controllers
 {
@@ -44,6 +46,38 @@ namespace QutebaApp_API.Controllers
             }
 
             return new JsonResult($"Error: income cannot be added because the category type is wrong!");
+        }
+
+        [HttpGet]
+        [Route("getallincome")]
+        [Authorize(Roles = "user")]
+        public IActionResult GetAllIncome()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var incomes = unitOfWork.IncomeRepository.FindAllBy(i => i.UserId == userId, "IncomeCategory");
+
+            if (incomes.FirstOrDefault() != null)
+            {
+                List<IncomeDashboardVM> incomesDashboardVM = new List<IncomeDashboardVM>();
+
+                foreach (var income in incomes)
+                {
+                    IncomeDashboardVM incomeDashboardVM = new IncomeDashboardVM()
+                    {
+                        IncomeCategoryName = income.IncomeCategory.CategoryName,
+                        IncomeCreationTime = income.IncomeCreationTime,
+                        IncomeAmount = income.IncomeAmount
+                    };
+
+                    incomesDashboardVM.Add(incomeDashboardVM);
+                }
+
+                return new JsonResult(incomesDashboardVM);
+            }
+
+            return new JsonResult("You currently have no income!");
+
         }
     }
 }

@@ -28,7 +28,7 @@ namespace QutebaApp_API
         {
             services.AddControllers().AddNewtonsoftJson();
 
-            services.AddDbContext<QutebaAppDbContext>(d => d.UseMySQL(Configuration.GetConnectionString("DefaultConnection")));
+            services.AddDbContext<QutebaAppDbContext>(options => options.UseMySQL(Configuration.GetConnectionString("DefaultConnection")), ServiceLifetime.Transient);
 
             services.AddScoped<IAuthService, AuthService>();
             services.AddScoped<IUnitOfWork, UnitOfWork>();

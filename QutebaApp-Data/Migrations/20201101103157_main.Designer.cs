@@ -9,7 +9,7 @@ using QutebaApp_Data.Data;
 namespace QutebaApp_Data.Migrations
 {
     [DbContext(typeof(QutebaAppDbContext))]
-    [Migration("20201029120049_main")]
+    [Migration("20201101103157_main")]
     partial class main
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -150,5 +150,25 @@ namespace QutebaApp_API.Controllers
 
             return new JsonResult("Error");
         }
+
+        [HttpDelete]
+        [Route("deletespending")]
+        [Authorize(Roles = "user")]
+        public IActionResult DeleteSpending([FromQuery] int spendingId)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var spending = unitOfWork.SpendingRepository.FindBy(s => s.UserId == userId && s.Id == spendingId);
+
+            if (spending != null)
+            {
+                unitOfWork.SpendingRepository.Delete(spendingId);
+                unitOfWork.Save();
+
+                return new JsonResult("Deleted");
+            }
+
+            return new JsonResult("Error");
+        }
     }
 }

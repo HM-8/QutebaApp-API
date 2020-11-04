@@ -59,6 +59,13 @@ namespace QutebaApp_Core.Services.Implementations
             return query;
         }
 
+        public T FindBy(Expression<Func<T, bool>> predicate, string include)
+        {
+            var query = table.Where(predicate).Include(include).FirstOrDefault();
+
+            return query;
+        }
+
         public IEnumerable<T> FindAllBy(Expression<Func<T, bool>> predicate)
         {
             var query = table.Where(predicate).ToList();

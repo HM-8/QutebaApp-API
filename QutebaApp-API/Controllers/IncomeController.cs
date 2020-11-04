@@ -109,6 +109,37 @@ namespace QutebaApp_API.Controllers
             return new JsonResult(dashboardCardVM);
         }
 
+        [HttpPatch]
+        [Route("updateincome")]
+        [Authorize(Roles = "user")]
+        public IActionResult UpdateIncome(IncomeDashboardVM incomeDashboardVM)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
 
+            var income = unitOfWork.IncomeRepository.FindBy(i => i.UserId == userId && i.Id == incomeDashboardVM.ID, "IncomeCategory");
+            unitOfWork.IncomeRepository.DetachEntry(income);
+
+            var category = unitOfWork.CategoryRepository.FindBy(c => c.CategoryName == incomeDashboardVM.IncomeCategoryName);
+            unitOfWork.CategoryRepository.DetachEntry(category);
+           
+            if (income != null && !category.Equals(null) && category.Id == income.IncomeCategory.Id)
+            {
+                Income updateIncome = new Income()
+                {
+                    Id = income.Id,
+                    UserId = income.UserId,
+                    IncomeCategoryId = category.Id,
+                    IncomeAmount = incomeDashboardVM.IncomeAmount,
+                    IncomeCreationTime = income.IncomeCreationTime
+                };
+
+                unitOfWork.IncomeRepository.Update(updateIncome);
+                unitOfWork.Save();
+
+                return new JsonResult(updateIncome);
+            }
+
+            return new JsonResult(BadRequest());
+        }
     }
 }

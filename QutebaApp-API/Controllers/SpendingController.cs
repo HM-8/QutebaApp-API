@@ -66,6 +66,7 @@ namespace QutebaApp_API.Controllers
                 {
                     SpendingDashboardVM spendingDashboardVM = new SpendingDashboardVM()
                     {
+                        ID = spending.Id,
                         SpendingCategoryName = spending.SpendingCategory.CategoryName,
                         SpendingCreationTime = spending.SpendingCreationTime,
                         SpendingAmount = spending.SpendingAmount

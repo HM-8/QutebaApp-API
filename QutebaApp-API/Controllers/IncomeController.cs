@@ -117,13 +117,14 @@ namespace QutebaApp_API.Controllers
             var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
 
             var income = unitOfWork.IncomeRepository.FindBy(i => i.UserId == userId && i.Id == incomeDashboardVM.ID, "IncomeCategory");
-            unitOfWork.IncomeRepository.DetachEntry(income);
-
-            var category = unitOfWork.CategoryRepository.FindBy(c => c.CategoryName == incomeDashboardVM.IncomeCategoryName);
-            unitOfWork.CategoryRepository.DetachEntry(category);
-           
-            if (income != null && !category.Equals(null) && category.Id == income.IncomeCategory.Id)
+            
+            var category = unitOfWork.CategoryRepository.FindBy(c => c.CategoryName == incomeDashboardVM.IncomeCategoryName && c.CategoryType == "income");
+            
+            if (income != null && category != null && category.Id == income.IncomeCategory.Id)
             {
+                unitOfWork.IncomeRepository.DetachEntry(income);
+                unitOfWork.CategoryRepository.DetachEntry(category);
+
                 Income updateIncome = new Income()
                 {
                     Id = income.Id,
@@ -136,10 +137,18 @@ namespace QutebaApp_API.Controllers
                 unitOfWork.IncomeRepository.Update(updateIncome);
                 unitOfWork.Save();
 
-                return new JsonResult(updateIncome);
+                IncomeDashboardVM UpdateIncomeDashboard = new IncomeDashboardVM()
+                { 
+                    ID = updateIncome.Id,
+                    IncomeCategoryName = category.CategoryName,
+                    IncomeCreationTime = updateIncome.IncomeCreationTime,
+                    IncomeAmount = updateIncome.IncomeAmount
+                };
+
+                return new JsonResult(UpdateIncomeDashboard);
             }
 
-            return new JsonResult(BadRequest());
+            return new JsonResult("Error");
         }
     }
 }

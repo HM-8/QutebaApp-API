@@ -65,6 +65,7 @@ namespace QutebaApp_API.Controllers
                 {
                     IncomeDashboardVM incomeDashboardVM = new IncomeDashboardVM()
                     {
+                        ID = income.Id,
                         IncomeCategoryName = income.IncomeCategory.CategoryName,
                         IncomeCreationTime = income.IncomeCreationTime,
                         IncomeAmount = income.IncomeAmount
@@ -107,5 +108,7 @@ namespace QutebaApp_API.Controllers
 
             return new JsonResult(dashboardCardVM);
         }
+
+
     }
 }

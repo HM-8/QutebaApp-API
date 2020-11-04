@@ -79,5 +79,33 @@ namespace QutebaApp_API.Controllers
             return new JsonResult("You currently have no income!");
 
         }
+
+        [HttpGet]
+        [Route("gettotalbalance")]
+        [Authorize(Roles = "user")]
+        public IActionResult GetTotalBalance()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var incomes = unitOfWork.IncomeRepository.FindAllBy(i => i.UserId == userId);
+
+            DateTime recentTransactionDate = DateTime.MinValue;
+
+            double total = 0.0;
+
+            if (incomes.FirstOrDefault() != null)
+            {
+                recentTransactionDate = incomes.OrderByDescending(i => i.IncomeCreationTime).FirstOrDefault().IncomeCreationTime;
+                total = incomes.Select(i => i.IncomeAmount).Sum();
+            }
+
+            DashboardCardVM dashboardCardVM = new DashboardCardVM()
+            {
+                RecentTransactionDate = recentTransactionDate,
+                Total = total
+            };
+
+            return new JsonResult(dashboardCardVM);
+        }
     }
 }

@@ -27,25 +27,12 @@ namespace QutebaApp_API.Controllers
         [HttpPost]
         [Route("signup-Email")]
         [AllowAnonymous]
-        public IActionResult SignUpEmail([FromBody] SignUpUserVM authenticateUser, [FromQuery] int pageId)
+        public IActionResult SignUpEmail([FromBody] SignUpUserVM authenticateUser)
         {
             try
             {
-                string role = null;
+                string role = "user";
                 string createdAccountWith = "password";
-
-                if (pageId == (int)PageTypes.RegisterSuperAdmin)
-                {
-                    role = "superadmin";
-                }
-                if (pageId == (int)PageTypes.RegisterAdmin)
-                {
-                    role = "admin";
-                }
-                if (pageId == (int)PageTypes.RegisterUser)
-                {
-                    role = "user";
-                }
 
                 var authenticatedUser = authService.Register(authenticateUser, role, createdAccountWith);
 

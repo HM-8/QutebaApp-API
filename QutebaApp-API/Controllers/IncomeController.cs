@@ -65,6 +65,7 @@ namespace QutebaApp_API.Controllers
                 {
                     IncomeDashboardVM incomeDashboardVM = new IncomeDashboardVM()
                     {
+                        ID = income.Id,
                         IncomeCategoryName = income.IncomeCategory.CategoryName,
                         IncomeCreationTime = income.IncomeCreationTime,
                         IncomeAmount = income.IncomeAmount
@@ -78,6 +79,96 @@ namespace QutebaApp_API.Controllers
 
             return new JsonResult("You currently have no income!");
 
+        }
+
+        [HttpGet]
+        [Route("gettotalbalance")]
+        [Authorize(Roles = "user")]
+        public IActionResult GetTotalBalance()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var incomes = unitOfWork.IncomeRepository.FindAllBy(i => i.UserId == userId);
+
+            DateTime recentTransactionDate = DateTime.MinValue;
+
+            double total = 0.0;
+
+            if (incomes.FirstOrDefault() != null)
+            {
+                recentTransactionDate = incomes.OrderByDescending(i => i.IncomeCreationTime).FirstOrDefault().IncomeCreationTime;
+                total = incomes.Select(i => i.IncomeAmount).Sum();
+            }
+
+            DashboardCardVM dashboardCardVM = new DashboardCardVM()
+            {
+                RecentTransactionDate = recentTransactionDate,
+                Total = total
+            };
+
+            return new JsonResult(dashboardCardVM);
+        }
+
+        [HttpPatch]
+        [Route("updateincome")]
+        [Authorize(Roles = "user")]
+        public IActionResult UpdateIncome(IncomeDashboardVM incomeDashboardVM)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var income = unitOfWork.IncomeRepository.FindBy(i => i.UserId == userId && i.Id == incomeDashboardVM.ID, "IncomeCategory");
+            
+            var category = unitOfWork.CategoryRepository.FindBy(c => c.CategoryName == incomeDashboardVM.IncomeCategoryName && c.CategoryType == "income");
+            
+            if (income != null && category != null && category.Id == income.IncomeCategory.Id)
+            {
+                unitOfWork.IncomeRepository.DetachEntry(income);
+                unitOfWork.CategoryRepository.DetachEntry(category);
+
+                Income updateIncome = new Income()
+                {
+                    Id = income.Id,
+                    UserId = income.UserId,
+                    IncomeCategoryId = category.Id,
+                    IncomeAmount = incomeDashboardVM.IncomeAmount,
+                    IncomeCreationTime = income.IncomeCreationTime
+                };
+
+                unitOfWork.IncomeRepository.Update(updateIncome);
+                unitOfWork.Save();
+
+                IncomeDashboardVM UpdateIncomeDashboard = new IncomeDashboardVM()
+                { 
+                    ID = updateIncome.Id,
+                    IncomeCategoryName = category.CategoryName,
+                    IncomeCreationTime = updateIncome.IncomeCreationTime,
+                    IncomeAmount = updateIncome.IncomeAmount
+                };
+
+                return new JsonResult(UpdateIncomeDashboard);
+            }
+
+            return new JsonResult("Error");
+        }
+
+        [HttpDelete]
+        [Route("deleteincome")]
+        [Authorize(Roles = "user")]
+        public IActionResult DeleteIncome([FromQuery] int incomeId)
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var income = unitOfWork.IncomeRepository.FindBy(i => i.UserId == userId && i.Id == incomeId);
+
+            if (income != null)
+            {
+                unitOfWork.IncomeRepository.Delete(incomeId);
+                unitOfWork.Save();
+
+                return new JsonResult("Deleted");
+            }
+
+            return new JsonResult("Error");
         }
     }
 }

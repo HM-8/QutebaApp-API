@@ -12,6 +12,6 @@ namespace QutebaApp_Data.Models
         public DateTime SpendingCreationTime { get; set; }
 
         public virtual Category SpendingCategory { get; set; }
-        public virtual Profile User { get; set; }
+        public virtual User User { get; set; }
     }
 }

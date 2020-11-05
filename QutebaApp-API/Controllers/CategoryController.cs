@@ -32,7 +32,22 @@ namespace QutebaApp_API.Controllers
 
             if (categories.FirstOrDefault() != null)
             {
-                return new JsonResult(categories);
+                List<CategoryVM> categoryVMs = new List<CategoryVM>();
+
+                foreach (var category in categories)
+                {
+                    CategoryVM categoryVM = new CategoryVM()
+                    { 
+                        Id = category.Id,
+                        CategoryName = category.CategoryName,
+                        CategoryType = category.CategoryType,
+                        CategoryCreationTime = category.CategoryCreationTime
+                    };
+
+                    categoryVMs.Add(categoryVM);
+                }
+
+                return new JsonResult(categoryVMs);
             }
 
             return new JsonResult("You currently have no categories!");

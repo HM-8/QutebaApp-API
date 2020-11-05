@@ -118,9 +118,9 @@ namespace QutebaApp_API.Controllers
 
             var spending = unitOfWork.SpendingRepository.FindBy(i => i.UserId == userId && i.Id == spendingDashboardVM.ID, "SpendingCategory");
             
-            var category = unitOfWork.CategoryRepository.FindBy(c => c.CategoryName == spendingDashboardVM.SpendingCategoryName && c.CategoryType == "spending");
+            var category = unitOfWork.CategoryRepository.FindBy(c => c.UserId == userId && c.CategoryName == spendingDashboardVM.SpendingCategoryName && c.CategoryType == "spending");
             
-            if (spending != null && category != null && category.Id == spending.SpendingCategory.Id)
+            if (spending != null && category != null && category.Id == spending.SpendingCategoryId)
             {
                 unitOfWork.SpendingRepository.DetachEntry(spending);
                 unitOfWork.CategoryRepository.DetachEntry(category);

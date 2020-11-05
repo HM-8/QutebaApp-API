@@ -11,6 +11,6 @@ namespace QutebaApp_Data.Models
         public DateTime IncomeCreationTime { get; set; }
 
         public virtual Category IncomeCategory { get; set; }
-        public virtual Profile User { get; set; }
+        public virtual User User { get; set; }
     }
 }

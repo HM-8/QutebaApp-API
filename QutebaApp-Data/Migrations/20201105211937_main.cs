@@ -1,6 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 using MySql.Data.EntityFrameworkCore.Metadata;
-using System;
 
 namespace QutebaApp_Data.Migrations
 {
@@ -47,6 +47,28 @@ namespace QutebaApp_Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "categories",
+                columns: table => new
+                {
+                    ID = table.Column<int>(nullable: false)
+                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
+                    user_cID = table.Column<int>(nullable: false),
+                    category_name = table.Column<string>(maxLength: 45, nullable: false),
+                    category_type = table.Column<string>(maxLength: 45, nullable: false),
+                    category_creation_time = table.Column<DateTime>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_categories", x => x.ID);
+                    table.ForeignKey(
+                        name: "user_caid",
+                        column: x => x.user_cID,
+                        principalTable: "users",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "codes",
                 columns: table => new
                 {
@@ -60,7 +82,7 @@ namespace QutebaApp_Data.Migrations
                 {
                     table.PrimaryKey("PRIMARY", x => x.ID);
                     table.ForeignKey(
-                        name: "user_cid",
+                        name: "user_coid",
                         column: x => x.user_cID,
                         principalTable: "users",
                         principalColumn: "ID",
@@ -88,28 +110,6 @@ namespace QutebaApp_Data.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "categories",
-                columns: table => new
-                {
-                    ID = table.Column<int>(nullable: false)
-                        .Annotation("MySQL:ValueGenerationStrategy", MySQLValueGenerationStrategy.IdentityColumn),
-                    user_cID = table.Column<int>(nullable: false),
-                    category_name = table.Column<string>(maxLength: 45, nullable: false),
-                    category_type = table.Column<string>(maxLength: 45, nullable: false),
-                    category_creation_time = table.Column<DateTime>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_categories", x => x.ID);
-                    table.ForeignKey(
-                        name: "user_id",
-                        column: x => x.user_cID,
-                        principalTable: "profiles",
-                        principalColumn: "user_pID",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "incomes",
                 columns: table => new
                 {
@@ -132,8 +132,8 @@ namespace QutebaApp_Data.Migrations
                     table.ForeignKey(
                         name: "user_iid",
                         column: x => x.user_iID,
-                        principalTable: "profiles",
-                        principalColumn: "user_pID",
+                        principalTable: "users",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -161,8 +161,8 @@ namespace QutebaApp_Data.Migrations
                     table.ForeignKey(
                         name: "user_sid",
                         column: x => x.user_sID,
-                        principalTable: "profiles",
-                        principalColumn: "user_pID",
+                        principalTable: "users",
+                        principalColumn: "ID",
                         onDelete: ReferentialAction.Restrict);
                 });
 
@@ -236,13 +236,13 @@ namespace QutebaApp_Data.Migrations
                 name: "incomes");
 
             migrationBuilder.DropTable(
+                name: "profiles");
+
+            migrationBuilder.DropTable(
                 name: "spendings");
 
             migrationBuilder.DropTable(
                 name: "categories");
-
-            migrationBuilder.DropTable(
-                name: "profiles");
 
             migrationBuilder.DropTable(
                 name: "users");

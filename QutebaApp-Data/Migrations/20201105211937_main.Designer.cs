@@ -9,7 +9,7 @@ using QutebaApp_Data.Data;
 namespace QutebaApp_Data.Migrations
 {
     [DbContext(typeof(QutebaAppDbContext))]
-    [Migration("20201101103157_main")]
+    [Migration("20201105211937_main")]
     partial class main
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -269,7 +269,7 @@ namespace QutebaApp_Data.Migrations
 
             modelBuilder.Entity("QutebaApp_Data.Models.Category", b =>
                 {
-                    b.HasOne("QutebaApp_Data.Models.Profile", "User")
+                    b.HasOne("QutebaApp_Data.Models.User", "User")
                         .WithMany("Categories")
                         .HasForeignKey("UserId")
                         .HasConstraintName("user_id")
@@ -293,7 +293,7 @@ namespace QutebaApp_Data.Migrations
                         .HasConstraintName("category_iid")
                         .IsRequired();
 
-                    b.HasOne("QutebaApp_Data.Models.Profile", "User")
+                    b.HasOne("QutebaApp_Data.Models.User", "User")
                         .WithMany("Incomes")
                         .HasForeignKey("UserId")
                         .HasConstraintName("user_iid")
@@ -317,7 +317,7 @@ namespace QutebaApp_Data.Migrations
                         .HasConstraintName("category_sid")
                         .IsRequired();
 
-                    b.HasOne("QutebaApp_Data.Models.Profile", "User")
+                    b.HasOne("QutebaApp_Data.Models.User", "User")
                         .WithMany("Spendings")
                         .HasForeignKey("UserId")
                         .HasConstraintName("user_sid")

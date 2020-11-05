@@ -17,7 +17,7 @@ namespace QutebaApp_Data.Models
         public string CategoryType { get; set; }
         public DateTime CategoryCreationTime { get; set; }
 
-        public virtual Profile User { get; set; }
+        public virtual User User { get; set; }
         public virtual ICollection<Income> Incomes { get; set; }
         public virtual ICollection<Spending> Spendings { get; set; }
     }

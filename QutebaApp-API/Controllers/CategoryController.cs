@@ -30,7 +30,7 @@ namespace QutebaApp_API.Controllers
 
             var categories = unitOfWork.CategoryRepository.FindAllBy(c => c.UserId == userId);
 
-            if (categories != null)
+            if (categories.FirstOrDefault() != null)
             {
                 return new JsonResult(categories);
             }

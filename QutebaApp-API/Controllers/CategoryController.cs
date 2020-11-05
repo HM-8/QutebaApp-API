@@ -54,13 +54,13 @@ namespace QutebaApp_API.Controllers
                 categoryType = "spending";
             }
 
-            var user = unitOfWork.ProfileRepository.GetById(Convert.ToInt32(HttpContext.User.FindFirst("userId").Value));
+            var user = unitOfWork.UserRepository.GetById(Convert.ToInt32(HttpContext.User.FindFirst("userId").Value));
 
             if (user != null)
             {
                 Category category = new Category()
                 {
-                    UserId = user.UserId,
+                    UserId = user.Id,
                     CategoryName = categoryVM.CategoryName,
                     CategoryType = categoryType,
                     CategoryCreationTime = DateTime.Now
@@ -72,7 +72,7 @@ namespace QutebaApp_API.Controllers
                 return new JsonResult($"Category {categoryVM.CategoryName} has been added! Created at {DateTime.Now}");
             }
 
-            return new JsonResult($"Error: You don't have a profile.");
+            return new JsonResult($"Error: Can't seem to create category!");
         }
 
         [HttpGet]

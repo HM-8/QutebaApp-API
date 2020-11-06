@@ -170,5 +170,35 @@ namespace QutebaApp_API.Controllers
 
             return new JsonResult("Error");
         }
+
+        [HttpGet]
+        [Route("listIncomeDaily")]
+        [Authorize(Roles = "user")]
+        public IActionResult ListIncomeDaily()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var incomes = unitOfWork.IncomeRepository.FindAllBy(i => i.UserId == userId);
+
+            if (incomes.FirstOrDefault() != null)
+            {
+                List<ListDailyVM> listIncomeDailyVMs = new List<ListDailyVM>();
+
+                foreach (var income in incomes)
+                {
+                    ListDailyVM listIncomeDailyVM = new ListDailyVM()
+                    {
+                        Hour = income.IncomeCreationTime.ToLocalTime().TimeOfDay.ToString().Substring(0, 5),
+                        Amount = income.IncomeAmount
+                    };
+
+                    listIncomeDailyVMs.Add(listIncomeDailyVM);
+                }
+
+                return new JsonResult(listIncomeDailyVMs);
+            }
+
+            return new JsonResult("You currently have no income!");
+        }
     }
 }

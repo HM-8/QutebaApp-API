@@ -170,5 +170,35 @@ namespace QutebaApp_API.Controllers
 
             return new JsonResult("Error");
         }
+
+        [HttpGet]
+        [Route("listSpendingDaily")]
+        [Authorize(Roles = "user")]
+        public IActionResult ListSpendingDaily()
+        {
+            var userId = Convert.ToInt32(HttpContext.User.FindFirst("userId").Value);
+
+            var spendings = unitOfWork.SpendingRepository.FindAllBy(i => i.UserId == userId);
+
+            if (spendings.FirstOrDefault() != null)
+            {
+                List<ListDailyVM> listSpendingDailyVMs = new List<ListDailyVM>();
+
+                foreach (var spending in spendings)
+                {
+                    ListDailyVM listSpendingDailyVM = new ListDailyVM()
+                    {
+                        Hour = spending.SpendingCreationTime.ToLocalTime().TimeOfDay.ToString().Substring(0, 5),
+                        Amount = spending.SpendingAmount
+                    };
+
+                    listSpendingDailyVMs.Add(listSpendingDailyVM);
+                }
+
+                return new JsonResult(listSpendingDailyVMs);
+            }
+
+            return new JsonResult("You currently have no spending!");
+        }
     }
 }

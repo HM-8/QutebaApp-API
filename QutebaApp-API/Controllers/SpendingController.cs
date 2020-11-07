@@ -188,7 +188,8 @@ namespace QutebaApp_API.Controllers
                 {
                     ListDailyVM listSpendingDailyVM = new ListDailyVM()
                     {
-                        Hour = spending.SpendingCreationTime.ToLocalTime().TimeOfDay.ToString().Substring(0, 5),
+                        Date = spending.SpendingCreationTime.ToString().Substring(0,9),
+                        Time = spending.SpendingCreationTime.TimeOfDay.ToString(),
                         Amount = spending.SpendingAmount
                     };
 

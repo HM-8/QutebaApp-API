@@ -6,7 +6,8 @@ namespace QutebaApp_Data.ViewModels
 {
     public class ListDailyVM
     {
-        public string Hour { get; set; }
+        public string Date { get; set; }
+        public string Time { get; set; }
         public double Amount { get; set; }
     }
 }

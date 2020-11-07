@@ -188,7 +188,8 @@ namespace QutebaApp_API.Controllers
                 {
                     ListDailyVM listIncomeDailyVM = new ListDailyVM()
                     {
-                        Hour = income.IncomeCreationTime.ToLocalTime().TimeOfDay.ToString().Substring(0, 5),
+                        Date = income.IncomeCreationTime.ToString().Substring(0, 9),
+                        Time = income.IncomeCreationTime.TimeOfDay.ToString(),
                         Amount = income.IncomeAmount
                     };
 

@@ -1,10 +1,12 @@
-# QutebaApp-API
+# QutebaApp
 
-An API for the Quteba Application
+Quteba app is an application that is beneficial to young adults who are having a hard time monitoring their spending habits and resolve planning issues. This is the API that the front-end application will consume. 
 
-# Built with
+# Built using
 
-  .NET Core
+- .NET Core
+- Docker
+- Sendgrid
 
 # Documentation
 

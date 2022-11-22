@@ -1,0 +1,19 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: my-cert-issuer
+    kubernetes.io/ingress.class: "nginx"
+  name: qutebapp-api-ingress
+spec:
+  rules:
+  - host: qutebapp-api.apps.et6om.gebeya.co
+    http:
+      paths:
+      - backend:
+          serviceName: qutebapp-api-service
+          servicePort: 80
+  tls:
+  - hosts:
+    - qutebapp-api.apps.et6om.gebeya.co
+    secretName: qutebapp-api-tls   
